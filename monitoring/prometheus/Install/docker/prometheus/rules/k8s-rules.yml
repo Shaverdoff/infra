@@ -1,0 +1,35 @@
+####################
+#### Kubernetes ####
+####################
+groups:
+- name: k8s-rules
+  rules:
+  - alert: Pod Container Not Ready
+    annotations:
+      description: '{{ $labels.container }} from pod {{ $labels.pod }} in namespace {{ $labels.namespace }} not ready more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: '{{ $labels.container }} from pod {{ $labels.pod }} not ready'
+    expr: kube_pod_container_status_ready != 1 and kube_pod_container_status_ready{namespace!="synccontacts-32-default"}
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: Pod Status Not Ready
+    annotations:
+      description: '{{ $labels.condition }} of pod {{ $labels.pod }} in namespace {{$labels.namespace }} more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: '{{ $labels.condition }} of pod {{ $labels.pod }}'
+    expr: kube_pod_status_ready{namespace="default", condition!="true" } == 1
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: Node Status Not Ready
+    annotations:
+      description: 'Status {{ $labels.status }} of node {{ $labels.node }} more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: Status {{ $labels.status }} of node {{ $labels.node }}
+    expr: kube_node_status_condition{ condition="Ready", status!="true" } == 1
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"       

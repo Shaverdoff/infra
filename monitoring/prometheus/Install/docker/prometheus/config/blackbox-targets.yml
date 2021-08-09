@@ -1,0 +1,21 @@
+####################
+# Monitor tools
+####################
+- targets:
+  - https://zabbix.company.ru/
+  labels:
+    tier: site
+    env: prod
+    job: blackbox
+    tag: 'Monitor tools'
+
+####################
+# MicroServices
+####################
+- targets:
+  - https://api1.company.ru/
+  labels:
+    tag: 'MicroServices for Site'
+    tier: site
+    env: prod
+    job: blackbox

@@ -1,0 +1,114 @@
+global:
+  # How frequently to scrape targets
+  scrape_interval:     10s
+  # How frequently to evaluate rules
+  evaluation_interval: 10s
+  external_labels:
+    monitor: 'RV-PROMETHEUS' # label for slack alerts
+
+rule_files:
+  - 'rules/common-rules.yml'
+  - 'rules/node-rules.yml'
+  - 'rules/k8s-rules.yml'
+  - 'rules/nginx-rules.yml'
+  - 'rules/blackbox-rules.yml'
+  - 'rules/php-rules.yml'
+  - 'rules/memcached-rules.yml'
+  - 'rules/sql-rules.yml'
+  
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+    - targets: 
+      - 'localhost:9090'
+
+  - job_name: 'federate'
+    scrape_interval: 15s
+    honor_labels: true
+    metrics_path: '/federate'
+    params:
+      match[]:
+        - '{job=~".+"}'
+    #  'match[]':
+    #    - '{job="prometheus"}'
+    #    - '{__name__=~"job:.*"}'
+    static_configs:
+      - targets:
+        - 'k8sprom.rendez-vous.ru'
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    scrape_interval: 35s
+    params:
+      module: [http_2xx]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115 # The blackbox exporter.
+    file_sd_configs:
+    - files:
+      - config/blackbox-targets.yml
+
+  - job_name: 'nginx-exporter'
+    file_sd_configs:
+      - files:
+        - config/nginx-exporter-targets.yml
+
+  - job_name: 'node-exporter'
+    file_sd_configs:
+      - files:
+        - config/node-exporter-targets.yml
+
+  - job_name: 'php-fpm-exporter'
+    file_sd_configs:
+      - files:
+        - config/php-fpm_exporter-targets.yml
+
+  - job_name: 'mysqld'
+    file_sd_configs:
+    - files:
+      - config/mysql-exporter-targets.yml
+
+  - job_name: 'memcached'
+    file_sd_configs:
+    - files:
+      - config/memcached-exporter-targets.yml
+
+  - job_name: 'springactuator'
+    metrics_path: '/api/actuator/prometheus'
+    scrape_interval: 10s
+    file_sd_configs:
+      - files:
+        - config/ms-site-targets.yml
+
+  - job_name: 'ceph'
+    file_sd_configs:
+      - files:
+        - config/ceph-targets.yml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

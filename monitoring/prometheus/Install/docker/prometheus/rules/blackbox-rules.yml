@@ -1,0 +1,22 @@
+##################
+#### Blackbox ####
+##################
+groups:
+- name: blackbox-rules
+  rules:
+  - alert: Http status code less 199 or more 500
+    expr: probe_http_status_code <= 199 OR probe_http_status_code >= 500
+    for: 5m
+    labels:
+      severity: error
+      tag: "{{ $labels.tag }}"
+    annotations:
+      title: HTTP Status Code {{ $labels.instance }} - {{ $value }}, 5 minutes"
+      description: "HTTP status code is {{ $value }} Tag {{ $labels.tag }}"
+
+  - alert: SSLCertExpiringSoon
+    expr: probe_ssl_earliest_cert_expiry{job="blackbox"} - time() < 86400 * 30
+    for: 10m
+    annotations:
+      summary: 'SSL expire alert'
+      description: "SSL certificate for the {% raw %}{{ $labels.instance }}{% endraw %} will expire soon!"

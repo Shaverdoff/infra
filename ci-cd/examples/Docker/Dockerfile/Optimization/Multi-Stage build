@@ -1,0 +1,7 @@
+FROM node:alpine AS builder
+COPY ./ /tmp/build
+RUN npm run build:prod
+
+
+FROM node:alpine
+COPY --from=builder /tmp/build/dist /var/www/html

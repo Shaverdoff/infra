@@ -1,0 +1,8 @@
+```
+# if you using ssh-tunnel for connection to DB MYSQL, make sure in sshd_config you have that option:
+Gateway yes
+
+# error was like this:
+Can not read response from server. Expected to read 4 bytes, read 0 bytes before connection was unexpectedly lost.
+```
+

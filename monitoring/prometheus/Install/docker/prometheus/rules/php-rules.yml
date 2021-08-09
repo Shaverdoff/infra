@@ -1,0 +1,25 @@
+##################
+#### SITE-php ####
+##################
+groups:
+- name: php-rules
+  rules:
+  - alert: PHP No Idle Proc
+    annotations:
+      description: 'No idle PHP-FPM proc on {{ $labels.instance}} more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: No idle PHP-FPM proc on {{ $labels.instance}}
+    expr: phpfpm_total_processes{state="idle", env="prod", tag="RV-SITE_back"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: PHP Down
+    annotations:
+      description: No idle PHP-FPM proc on {{ $labels.instance}} more than 2 minutes.
+      summary: No idle PHP-FPM proc on {{ $labels.instance}}
+    expr: phpfpm_up{env="prod", tag="RV-SITE_back"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"

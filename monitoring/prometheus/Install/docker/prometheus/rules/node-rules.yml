@@ -1,0 +1,25 @@
+####################
+#### Site-nodes ####
+####################
+groups:
+- name: node-rules
+  rules:
+  - alert: Node Load 1m is High
+    annotations:
+      description: '{{ $labels.instance }} has LA 1m {{ $value }} load for more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: 'Instance {{ $labels.instance }} - High LA load 1m '
+    expr: node_load1 {env="prod", tag="RV-SITE_front"} > 30 or  node_load1 {env="prod", tag="RV-SITE_back"} > 30 or node_load1 {env="prod", tag="RV-SITE_db"} > 30 
+    for: 2m
+    labels:
+      severity: warning
+      tag: "{{ $labels.tag }}"
+
+  - alert: Node Load 5m is High
+    annotations:
+      description: '{{ $labels.instance }} has LA 1m {{ $value }} load for more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: 'Instance {{ $labels.instance }} - High LA load 5m '
+    expr: node_load5 {env="prod", tag="RV-SITE_front"} > 30 or  node_load1 {env="prod", tag="RV-SITE_back"} > 30 or node_load1 {env="prod", tag="RV-SITE_db"} > 30 
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"

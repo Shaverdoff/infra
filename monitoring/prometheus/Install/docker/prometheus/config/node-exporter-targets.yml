@@ -1,0 +1,11 @@
+####################
+# RV-SITE Node
+####################
+## frontend
+- targets:
+  - rv-site-frt00:9100
+  labels:
+    tier: frontend
+    env: prod
+    job: node-exporter
+    tag: 'RV-SITE_front'

@@ -1,0 +1,16 @@
+# example for usage external network
+version: '3.7'
+services:
+  lam:
+    image: ldapaccountmanager/lam:stable
+    container_name: lam
+    networks:
+      - backend
+    ports:
+      - 8080:80
+
+networks:
+  backend:
+    name: test_net_${branch}
+    external: true
+      

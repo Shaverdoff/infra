@@ -1,0 +1,12 @@
+####################
+# RV-SITE
+####################
+## MYSQL
+- targets:
+  - rv-site-sql04:9104
+  - rv-site-sql05:9104
+  labels:
+    tier: site
+    env: prod
+    job: mysql
+    tag: "RV-SITE_db"
