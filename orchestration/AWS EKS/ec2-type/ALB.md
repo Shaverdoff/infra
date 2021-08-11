@@ -1,6 +1,6 @@
-#### ALB v2.2 !!!!!!!
+!!!! ALB v2.2 !!!!
 # STEP 1: Create & Associate IAM OIDC Provider for our EKS Cluster
-### Step 1.1: Create an IAM policy for the service account 
+#### Step 1.1: Create an IAM policy for the service account 
 **Note:** The ALB Ingress Controller requires several API calls to provision the ALB components for the ingress resource type. 
 #### verify
 ```
@@ -85,9 +85,9 @@ https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controlle
 **To check the status of the  **alb-ingress-controller**  deployment, run the following command:**
 ```
 kubectl -n kube-system get pod
-kubectl logs -f -n kube-system $(kubectl get po -n kube-system | egrep -o 'aws-load-balancer-controller[a-zA-Z0-9-]+') 
+kubectl logs -f --tail 200 -n kube-system $(kubectl get po -n kube-system | egrep -o 'aws-load-balancer-controller[a-zA-Z0-9-]+')
 ```
-#### EXAMPLE for check AWX-LB-controller
+#### EXAMPLE for check AWS-LB-controller
 nano 2048.yml
 ```
 ---

@@ -1,17 +1,23 @@
-
 # k8s dashboard
 ```
-export env=stg
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 kubectl create ns kubernetes-dashboard
-helm upgrade --install kubernetes-dashboard -n kubernetes-dashboard --values values_$env.yml kubernetes-dashboard/kubernetes-dashboard
-
-####### OLD
-# for delete
-kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
-kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
-# for install
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
+export env=dev
+export arn=AWS_ARN dash_url=dash-$env.company.com
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard -n kubernetes-dashboard \
+--set extraArgs="{--token-ttl=0}" \
+--set ingress.enabled=true --set ingress.paths[0]=/* \
+--set ingress.hosts[0]=$dash_url \
+--set ingress.annotations."kubernetes\.io/ingress\.class"=alb \
+--set ingress.annotations."alb\.ingress\.kubernetes\.io/scheme"=internet-facing \
+--set ingress.annotations."alb\.ingress\.kubernetes\.io/target-type"=instance \
+--set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=$ARN \
+--set ingress.annotations."alb\.ingress\.kubernetes\.io/listen-ports"='[{"HTTPS":443}]' \
+--set ingress.annotations."alb\.ingress\.kubernetes\.io/backend-protocol"=HTTPS \
+--set ingress.annotations."alb\.ingress\.kubernetes\.io/healthcheck-protocol"=HTTPS \
+--set service.type=NodePort \
+--set metricsScraper.enabled=true --set metrics-server.enabled=true \
+--set metrics-server.args="{--kubelet-preferred-address-types=InternalIP,--kubelet-insecure-tls}"
 ```
 #### Создаем ServiceAccount для кластера:
 ```

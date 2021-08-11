@@ -1,3 +1,24 @@
+# Step-00 Update the repo
+```
+# here you can check last tag - https://github.com/terraform-aws-modules/terraform-aws-eks
+export tag="v17.1.0"
+mv terraform-aws-eks terraform-aws-eks-old
+git clone https://github.com/terraform-aws-modules/terraform-aws-eks.git --branch $tag --single-branch
+nano eks_node.tf
+# change path to terraform repo
+terraform init
+
+# HOW USE IT:
+terraform workspace list
+export env=stg
+terraform workspace select $env
+terraform apply -var-file=$env.tfvars
+
+# FOR DEV
+terraform workspace select default
+terraform apply -var-file=dev.tfvars
+```
+
 # Step-01: install eksctl
 ```
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
