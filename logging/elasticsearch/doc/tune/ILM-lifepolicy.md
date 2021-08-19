@@ -99,6 +99,27 @@ PUT nginx-000001
     }
   }
 }
+
+
+# create new index with mappings status field = long (number) and remote_addr = ip
+PUT nginx-000001
+{
+  "aliases": {
+    "nginx": {
+      "is_write_index": true
+    }
+  },
+  "mappings": {
+    "properties": {
+      "status": {
+        "type": "long"
+      },
+      "remote_addr": {
+        "type": "ip"
+      }
+    }
+  }
+}
 ```
 ### 4. create index pattern NGINX on alias nginx
 
@@ -115,9 +136,10 @@ POST nginx-000001/_delete_by_query
 ```
 # delete index
 ```
-DELETE /nginx
-DELETE /nginx-000001
+# for delete index, stop new dataflow, e.g. fluentbit
 DELETE /nginx-000001/_alias/nginx
+DELETE /nginx-000001
+
 ```
 
 # OTHER
