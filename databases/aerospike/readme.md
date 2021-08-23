@@ -9,5 +9,8 @@ minimum SSD, better IN MEMORY
  EASY SCALE!
  MINIMUM LATENCY
  SCALE HORIZONTALLY with SSD OR NODES
- 
+
+VS CASSANDRA
+need less servers then for cassandra
+better perfomance
 ```
