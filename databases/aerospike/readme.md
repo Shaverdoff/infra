@@ -15,6 +15,7 @@ minimum SSD, better IN MEMORY
 VS CASSANDRA
 need less servers then for cassandra
 better perfomance
+Document model?
 
 DISADVANTAGES:
 for SQL-like queries need to use a PRESTO!
