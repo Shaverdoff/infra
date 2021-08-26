@@ -1,0 +1,8 @@
+# enable
+```
+В обычном состоянии Instana видит транзакции до уровня вызовов. Но есть возможность увидеть до конкретного метода. Это уже работает для NodeJS, Java, Python, Go и в бета режиме для PHP. 
+nano /opt/instana/agent/etc/instana/configuration.yaml
+com.instana.plugin.php:
+  profiling:
+    enabled: true
+```
