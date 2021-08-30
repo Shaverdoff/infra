@@ -12,6 +12,17 @@ PUT /kube/_settings
     }
 }
 ```
+# index.number_of_replicas 
+```
+# get current settings
+GET /kube/_settings
+PUT /kube/_settings
+{
+    "index" : {
+        "number_of_replicas" : 0
+    }
+}
+```
 
 
 
