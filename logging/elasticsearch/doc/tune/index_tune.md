@@ -8,7 +8,7 @@ GET /kube/_settings
 PUT /kube/_settings
 {
     "index" : {
-        "number_of_replicas" : 10
+        "refresh_interval" : "10s"
     }
 }
 ```
