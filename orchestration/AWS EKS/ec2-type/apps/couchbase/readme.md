@@ -55,14 +55,17 @@ DNS:*.couchbase.svc,\
 DNS:*.company.com\  - set company domain wildcard !!!!!!!
  build-server-full couchbase-server nopass
 
-cp pki/private/couchbase-server.key pkey.key
-cp pki/issued/couchbase-server.crt chain.pem
+mkdir $env
+cp pki/private/couchbase-server.key $env/pkey.key
+cp pki/issued/couchbase-server.crt $env/chain.pem
+cd $env
 openssl rsa -in pkey.key -out pkey.key.der -outform DER
 openssl rsa -in pkey.key.der -inform DER -out pkey.key -outform PEM
 # for non-default namespace, say namespace 'couchbase'
 kubectl delete secret couchbase-server-tls -n couchbase
 kubectl delete secret couchbase-operator-tls -n couchbase
 kubectl -n couchbase create secret generic couchbase-server-tls --from-file chain.pem --from-file pkey.key --namespace couchbase
+cd ..
 kubectl -n couchbase create secret generic couchbase-operator-tls --from-file pki/ca.crt --namespace couchbase
 ```
 
