@@ -58,7 +58,7 @@ helm upgrade -i aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver \
   --set controller.serviceAccount.create=false \
   --set controller.serviceAccount.name=$iamserviceaccount \
   --set controller.extra-tags.ekscluster=$cluster_name \
-  --set node.serviceAccount.create=true \
+  --set node.serviceAccount.create=false \
   --set node.serviceAccount.name=$iamserviceaccount
  
 # NOTE: NEED TO CREATE STORAGE CLASS or use with values.yaml
