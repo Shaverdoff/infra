@@ -38,6 +38,8 @@ eksctl --region us-east-2 get clusters
 ```
 #### KubeConfig
 ```
+export env=dev
+export cluster_name=api-$env
 aws eks --region $region update-kubeconfig --name $cluster_name
 cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/test.yml
 export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/test.yml
