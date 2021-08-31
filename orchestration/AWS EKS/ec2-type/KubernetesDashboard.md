@@ -4,7 +4,7 @@ helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 kubectl create ns kubernetes-dashboard
 export env=dev
 export arn=AWS_ARN dash_url=dash-$env.company.com
-helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard -n kubernetes-dashboard \
+helm upgrade -i kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard -n kubernetes-dashboard \
 --set extraArgs="{--token-ttl=0}" \
 --set ingress.enabled=true --set ingress.paths[0]=/* \
 --set ingress.hosts[0]=$dash_url \
