@@ -88,6 +88,7 @@ kubectl edit svc -n kubernetes-dashboard
 kubectl -n kubernetes-dashboard get pods
 kubectl get deployment metrics-server -n kube-system
 yum install jq -y
+export cluster_name=api-$env
 aws eks get-token --cluster-name $cluster_name | jq -r '.status.token'
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
 ```
