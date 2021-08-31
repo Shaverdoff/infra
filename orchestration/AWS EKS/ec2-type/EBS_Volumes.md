@@ -52,18 +52,14 @@ helm search repo aws-ebs-csi-driver
 # uninstall 
 helm delete aws-ebs-csi-driver --namespace kube-system
 # install
-helm upgrade --install aws-ebs-csi-driver \
-  --namespace kube-system \
-  --set serviceAccount.controller.create=false \
-  --set serviceAccount.snapshot.create=false \
-  --set enableVolumeScheduling=true \
-  --set enableVolumeResizing=true \
-  --set enableVolumeSnapshot=true \
-  --set serviceAccount.snapshot.name=$iamserviceaccount \
-  --set serviceAccount.controller.name=$iamserviceaccount \
-  --set extraVolumeTags.ekscluster=$cluster_name \
-  --set region=$region \
-  aws-ebs-csi-driver/aws-ebs-csi-driver
+helm upgrade -i aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver \
+  -n kube-system \
+  --set controller.region=$region \
+  --set controller.serviceAccount.create=false \
+  --set controller.serviceAccount.name=$iamserviceaccount \
+  --set controller.extra-tags.ekscluster=$cluster_name \
+  --set node.serviceAccount.create=true \
+  --set node.serviceAccount.name=$iamserviceaccount
  
 # NOTE: NEED TO CREATE STORAGE CLASS or use with values.yaml
 Dynamic Volume Provisioning allows storage volumes to be created on-demand.
@@ -98,6 +94,8 @@ kubectl -n kube-system rollout status deployment ebs-csi-controller
 kubectl get pod -n kube-system -l "app.kubernetes.io/name=aws-ebs-csi-driver,app.kubernetes.io/instance=aws-ebs-csi-driver"
 kubectl delete -f storageclass.yaml
 kubectl apply -f storageclass.yaml
+
+
 
 # OTHER METHOD, get values.yaml with all config and use it
 # install (VALUES.yaml with predefined storage class)
