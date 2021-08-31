@@ -85,8 +85,8 @@ parameters:
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
-mountOptions:
-- debug
+#mountOptions:
+#- debug
 EoF
 # CHECK
 kubectl -n kube-system rollout status deployment ebs-csi-controller
