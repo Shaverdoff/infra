@@ -65,23 +65,6 @@ subjects:
   namespace: kubernetes-dashboard
 EOF
 ```
-# INGRESS HELM
-```
-# change dev to your_env in values.yaml
-cd dashboard
-export env=dev
-cp values.yaml values_dev.yaml
-nano values_dev.yaml
-helm upgrade --install -f ./dashboard/values_$env.yaml -n kubernetes-dashboard dashboard dashboard/
-
-# token TTL
-kubectl edit deployment kubernetes-dashboard -n kubernetes-dashboard
-- '--token-ttl=0'
-
-# change ClusterIP to type: NodePort
-export EDITOR=nano
-kubectl edit svc -n kubernetes-dashboard
-```
 
 #### verify
 ```
