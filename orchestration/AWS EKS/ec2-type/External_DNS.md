@@ -19,6 +19,6 @@ helm upgrade --install external-dns \
   --set txtOwnerId=$env bitnami/external-dns --version 4.12.2
 
 # Check
-kubectl --namespace=default get pods -l "app.kubernetes.io/name=external-dns,app.kubernetes.io/instance=apidns"
+kubectl --namespace=default get pods -l "app.kubernetes.io/name=external-dns"
 kubectl --namespace=default logs -f external-dns-6fd975bfcd-ss6fd
 ```
