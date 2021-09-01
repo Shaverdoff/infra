@@ -52,6 +52,7 @@ https://app.logz.io/#/dashboard/metrics/d/61swvitOR40ZEgEIaC3JRG/infrastructure-
 ```
 
 ### FLUENT BIT
+```
 ## edit version of fluentbit to 1.78
 git clone https://github.com/logzio/fluent-bit-logzio-output.git
 docker build -t registry.shakticoin.com/logzio/fluent-bit-output:0.0.2 -f test/Dockerfile .
