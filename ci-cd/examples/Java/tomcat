@@ -1,0 +1,7 @@
+## README
+```
+DONT FORGET!
+1) webapps folder set in /usr/local/tomcat/conf/server.xml
+2) APPS must be in webapps folder - /usr/local/tomcat/webapp
+3) name of app - its a path of url!!!!! (if app-name - api.war, url will be https://site.com/api)
+```
