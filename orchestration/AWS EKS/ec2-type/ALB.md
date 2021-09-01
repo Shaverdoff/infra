@@ -35,7 +35,7 @@ curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-lo
 aws iam create-policy \
 --region=$region \
 --policy-name AWSLoadBalancerControllerIAMPolicy-$env \
---policy-document file://iam-policy.json
+--policy-document file://iam_policy.json
 ```
 # STEP 05:  Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
 ```
@@ -65,7 +65,7 @@ eksctl get iamserviceaccount --region=$region --cluster=$cluster_name --namespac
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update
 #Install the TargetGroupBinding CRDs:
-kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+#kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
 
 # Install the AWS Load Balancer controller, if using iamserviceaccount
 export vpc=$(aws eks describe-cluster --region $region --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
