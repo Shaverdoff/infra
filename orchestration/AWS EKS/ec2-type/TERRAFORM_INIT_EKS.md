@@ -1,3 +1,9 @@
+# DELETING OLD CLUSTER
+```
+1 delete old ELB
+2 second delete vpc
+```
+
 # Step-00 Update the repo
 ```
 # here you can check last tag - https://github.com/terraform-aws-modules/terraform-aws-eks
