@@ -31,6 +31,41 @@ echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl --namespace monitoring port-forward $POD_NAME 8080:$CONTAINER_PORT --address 0.0.0.0
 ```
 
+### LOGZIO
+```
+helm repo add logzio-helm https://logzio.github.io/logzio-helm
+# CONNECT PROMETHEUS IN k8s to LOGZIO
+# token for logzio - PROMETHEUS-METRICS-SHIPPING-TOKEN
+https://app.logz.io/#/dashboard/settings/manage-tokens/data-shipping?product=metrics
+# ListenerHost - find your region on below page
+https://docs.logz.io/user-guide/accounts/account-region.html
+export env=dev 
+export token=TOKEN....... ListenerHost="https://listener.logz.io:8053"
+helm install  -n monitoring \
+--set secrets.MetricsToken=$token \
+--set secrets.ListenerHost=$ListenerHost \
+--set secrets.p8s_logzio_name=api_$env \
+logzio-otel-k8s-metrics logzio-helm/logzio-otel-k8s-metrics
+
+# check metrics here
+https://app.logz.io/#/dashboard/metrics/d/61swvitOR40ZEgEIaC3JRG/infrastructure-monitoring-home-dashboard?switchToAccountId=163703
+```
+
+### FLUENT BIT
+## edit version of fluentbit to 1.78
+git clone https://github.com/logzio/fluent-bit-logzio-output.git
+docker build -t registry.shakticoin.com/logzio/fluent-bit-output:0.0.2 -f test/Dockerfile .
+docker run logzio-bit-test
+
+# secret with docker registry creds
+kubectl apply -f secret.yml
+# install
+helm repo add fluent https://fluent.github.io/helm-charts
+export env=qa
+helm install fluent-bit  -n monitoring --values fluentbit_$env.yml fluent/fluent-bit
+```
+
+```
 
 
 
