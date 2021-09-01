@@ -66,7 +66,6 @@ export env=qa
 helm install fluent-bit  -n monitoring --values fluentbit_$env.yml fluent/fluent-bit
 ```
 
-```
 
 
 
