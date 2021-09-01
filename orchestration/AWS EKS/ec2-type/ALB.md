@@ -69,6 +69,7 @@ helm repo update
 
 # Install the AWS Load Balancer controller, if using iamserviceaccount
 export vpc=$(aws eks describe-cluster --region $region --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
+echo $vpc
 helm delete aws-load-balancer-controller -n kube-system
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
 --set clusterName=$cluster_name \
@@ -81,7 +82,6 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n ku
 # Additional options
 https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
 ```
-
 **To check the status of the  **alb-ingress-controller**  deployment, run the following command:**
 ```
 kubectl -n kube-system get pod
