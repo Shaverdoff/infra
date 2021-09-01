@@ -21,7 +21,7 @@ helm upgrade --install consul-exporter -n monitoring \
 ```
 ### BLACKBOX EXPORTER
 ```
-helm upgrade -install blackbox-exporter -n monitoring  -f blackbox-exporter.yml prometheus-community/prometheus-blackbox-exporter
+helm upgrade -i blackbox-exporter -n monitoring prometheus-community/prometheus-blackbox-exporter
 ## add targets to probe
 kubectl apply -f blackbox-probe.yml
 # checks
