@@ -1,16 +1,15 @@
 # ADD NEW NODE
+### ON MASTER NODE
+#### get token
 ```
-######################
-# ON MASTER NODE
-######################
-# get token
 kubeadm token create --print-join-command
 kubeadm join 10.3.3.58:6443 --token qwewqewqeqeqe --discovery-token-ca-cert-hash sha256:qweq12312321312321321312312312
+```
 
-######################
-# ON SLAVE MODE
-######################
-# tc on centos8
+### ON SLAVE MODE
+#### Prepare
+```
+#tc on centos8
 dnf install -y iproute-tc
 
 # disable swap
@@ -29,6 +28,10 @@ net.ipv4.ip_forward                 = 1
 EOF
 sudo sysctl --system
 
+
+# Set SELinux in permissive mode (effectively disabling it)
+sudo setenforce 0
+sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
 # install docker with "SYSTEMD" driver
 nano /etc/docker/daemon.json
@@ -81,10 +84,10 @@ KillMode=process
 [Install]
 WantedBy=multi-user.target
 
-
 systemctl enable docker.service
 systemctl start docker.service
 docker ps -a
+
 
 # install k8s tools
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
@@ -98,47 +101,29 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 exclude=kubelet kubeadm kubectl
 EOF
 
-# Set SELinux in permissive mode (effectively disabling it)
-sudo setenforce 0
-sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 export version="1.20.9"
 yum install kubeadm-${version} kubelet-${version} kubectl-${version} --disableexcludes=kubernetes
 systemctl enable --now kubelet
 kubectl version --client
 kubeadm version
+```
 
+
+### ADD NODE
+```
+# on master get token
+kubeadm token create --print-join-command
+kubeadm join 10.3.3.58:6443 --token test     --discovery-token-ca-cert-hash sha256:test
 # join slave to the cluster
 kubeadm join 10.3.3.58:6443 --token qwewqewqeqeqe --discovery-token-ca-cert-hash sha256:qweq12312321312321321312312312
-
 # on master node you can check it with:
 kubectl get nodes
-
 # label - node as worker
 kubectl label nodes node55 clickhouse=true
 kubectl label node node55 node-role.kubernetes.io/worker= --overwrite
 ```
 
-# DELETE NODE
-```
-# Mark node "foo" as unschedulable.
-kubectl cordon foo
-# drain node foo
-kubectl drain foo --ignore-daemonsets
-# remove node foo
-kubectl delete node foo
-# check nodes
-kubectl get nodes
 
-# connect to deleted node!
 
-# reset all
-kubeadm reset
 
-# ADD NODE
-# on master get token
-kubeadm token create --print-join-command
 
-kubeadm join 10.3.3.58:6443 --token test     --discovery-token-ca-cert-hash sha256:test
-# LABEL NODE
-kubectl label node
-```
