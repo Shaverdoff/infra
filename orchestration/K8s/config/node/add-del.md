@@ -30,18 +30,18 @@ EOF
 sudo sysctl --system
 
 
-
-
-
-
-
 # install docker with "SYSTEMD" driver
 nano /etc/docker/daemon.json
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
-  "bip": "10.220.0.1/24",
+  "bip": "211.211.3.1/24",
+  "dns": ["10.3.1.1", "10.3.1.2"],
+  "dns-search": ["default.svc.k8s-ops.cluster", "svc.k8s-ops.cluster", "company.ru"],
+  "dns-opt": ["ndots:2", "timeout:2", "attempts:2"],
   "ipv6": false,
+  "iptables": false,
+  "data-root": "/var/lib/docker",
   "hosts": ["unix:///var/run/docker.sock"],
   "log-opts": {
     "max-size": "100m", "max-file": "3"
@@ -51,6 +51,36 @@ nano /etc/docker/daemon.json
     "overlay2.override_kernel_check=true"
   ]
 }
+
+nano /etc/systemd/system/docker.service
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+BindsTo=containerd.service
+After=network-online.target firewalld.service containerd.service
+Wants=network-online.target
+Requires=docker.socket
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/dockerd --containerd=/run/containerd/containerd.sock
+ExecReload=/bin/kill -s HUP $MAINPID
+TimeoutSec=0
+TimeoutStartSec=1min
+RestartSec=2
+Restart=on-failure
+StartLimitBurst=3
+StartLimitInterval=60s
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+Delegate=yes
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+
 
 systemctl enable docker.service
 systemctl start docker.service
@@ -71,7 +101,7 @@ EOF
 # Set SELinux in permissive mode (effectively disabling it)
 sudo setenforce 0
 sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
-export version="1.20.7"
+export version="1.20.9"
 yum install kubeadm-${version} kubelet-${version} kubectl-${version} --disableexcludes=kubernetes
 systemctl enable --now kubelet
 kubectl version --client
