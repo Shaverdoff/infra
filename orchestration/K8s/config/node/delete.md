@@ -1,5 +1,5 @@
 # DELETE NODE
-#### Mark node "foo" as unschedulable.
+##### Mark node "foo" as unschedulable.
 ```
 kubectl cordon foo
 ```
