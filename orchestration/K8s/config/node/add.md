@@ -113,9 +113,8 @@ kubeadm version
 ```
 # on master get token
 kubeadm token create --print-join-command
-kubeadm join 10.3.3.58:6443 --token test     --discovery-token-ca-cert-hash sha256:test
 # join slave to the cluster
-kubeadm join 10.3.3.58:6443 --token qwewqewqeqeqe --discovery-token-ca-cert-hash sha256:qweq12312321312321321312312312
+kubeadm join master_IP_node:6443 --token qwewqewqeqeqe --discovery-token-ca-cert-hash sha256:qweq12312321312321321312312312
 # on master node you can check it with:
 kubectl get nodes
 # label - node as worker
