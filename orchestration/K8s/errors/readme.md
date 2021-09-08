@@ -28,3 +28,24 @@ systemctl start docker kubelet
 kubeadm join ...
 
 ```
+
+# K8s main status
+```
+kubectl get componentstatuses
+kubectl get cs
+scheduler            Unhealthy   Get "http://127.0.0.1:10251/healthz": dial tcp 127.0.0.1:10251: connect: connection refused
+controller-manager   Unhealthy   Get "http://127.0.0.1:10252/healthz": dial tcp 127.0.0.1:10252: connect: connection refused
+# solution
+nano /etc/kubernetes/manifests/kube-scheduler.yaml
+#Comment or delete the line:
+- --port=0
+
+nano /etc/kubernetes/manifests/kube-controller-manager.yaml
+# Comment or delete the line:
+- --port=0
+systemctl restart kubelet
+# check
+kubectl get cs
+controller-manager   Healthy   ok                  
+scheduler            Healthy   ok
+```
