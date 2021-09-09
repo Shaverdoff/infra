@@ -7,6 +7,37 @@ node-affinity:
 pod-affinity:
  поды всегда стояли на разных узлах с одной меткой (типо слэйвы бд на разных нодах)
 
+
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        # DONT RUN PODS ON MASTER NODE
+        - key: node-role.kubernetes.io/master
+          operator: DoesNotExist
+        # RUN POD ON NODE WITH LABEL DSA
+        - key: dsa
+          operator: Exists
+
+
+
+
+
+
 можно использовать ДНС имя для обращения к кластеру БД
 clusterIP: none
+
+
+
+
+
+
+
+
+
+
+
+
 ```
