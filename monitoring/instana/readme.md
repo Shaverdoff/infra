@@ -8,10 +8,12 @@
 # APACHE:
 добавить блок статуса в апач httpd.conf
 и расскоментить блок апача в конфиге инстана-агента configuration.yml
+com.instana.plugin.httpd:
+  tracing:
+    enabled: true
+    
 
-# Nginx
-добавить блок статуса /etc/nginx/conf.d/status.conf
-расскоментить блок nginx.conf в configuration.yml
+
 
 # Memcached
 расскоментить блок Memcached в configuration.yml
