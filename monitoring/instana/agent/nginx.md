@@ -11,7 +11,8 @@ location /nginx_status {
   deny  all;
 }
 
-# TRACERT
+# TRACE
+https://www.instana.com/docs/ecosystem/nginx/#distributed-tracing-for-kubernetes-nginx-ingress
 внести изменения в nginx.conf
 # INSTANA
 load_module modules/glibc-nginx-1.20.1-ngx_http_ot_module.so;
