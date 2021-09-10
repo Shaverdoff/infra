@@ -26,9 +26,6 @@ PUT _ilm/policy/rv-lifepolicy_all
           },
           "forcemerge": {
             "max_num_segments": 1
-          },
-          "set_priority": {
-            "priority": 100
           }
         }
       },
@@ -36,12 +33,6 @@ PUT _ilm/policy/rv-lifepolicy_all
         "min_age": "10d",
         "actions": {
           "readonly": {},
-          "shrink": {
-            "number_of_shards": 1
-          },
-          "set_priority": {
-            "priority": 50
-          },
           "allocate": {
             "number_of_replicas": 0
           }
@@ -71,29 +62,30 @@ PUT _ilm/policy/rv-lifepolicy_all
 Menu => Stack Management => Index management => Index template => Create template
 # ** CLI **
 ```
+
 PUT _index_template/rv-index_template
 {
   "template": {
+    "aliases": {
+      "rv-site_nginx": {}
+    },
     "settings": {
       "index": {
         "lifecycle": {
           "name": "rv-lifepolicy_all",
-          "rollover_alias": "rv_index_template"
+          "rollover_alias": "rv-index_template"
         },
+        "codec": "best_compression",
         "number_of_shards": "1",
-        "auto_expand_replicas": "0-1",
         "number_of_replicas": "0"
       }
     }
   },
   "index_patterns": [
-    "rv-site_nginx-*"б
-    б
-    фвф
-    бфыв
-  ],
-  "composed_of": []
+    "rv-site_nginx-*"
+  ]
 }
+
 
 ```
 
@@ -102,7 +94,7 @@ PUT _index_template/rv-index_template
 PUT rv-site_nginx-000001
 {
   "aliases": {
-    "nginx": {
+    "rv-site_nginx": {
       "is_write_index": true
     }
   }
