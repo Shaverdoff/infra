@@ -100,7 +100,7 @@ PUT nginx-000001
   }
 }
 
-
+# second example!
 # create new index with mappings status field = long (number) and remote_addr = ip
 PUT nginx-000001
 {
