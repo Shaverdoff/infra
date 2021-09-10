@@ -9,6 +9,7 @@ Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Cre
 go to Menu => Dev tools
 ```
 # shard - это подпапка в индексе (индекс весит 400гб, может состоять либо из шарда(папки в 400гб), либо из 10 шардов по 40гб)
+# segment - size of heap (RAM size for elk)
 # max_primary_shard_size - set size of shard in mb,gb
 
 # life policy
