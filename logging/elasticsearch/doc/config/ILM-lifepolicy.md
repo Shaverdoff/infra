@@ -8,43 +8,46 @@ Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Cre
 #### ** Policy CLI**
 go to Menu => Dev tools
 ```
+# shard - это подпапка в индексе (индекс весит 400гб, может состоять либо из шарда(папки в 400гб), либо из 10 шардов по 40гб)
+# max_primary_shard_size - set size of shard in mb,gb
+
 # life policy
-PUT _ilm/policy/rv-lifepolicy
+PUT _ilm/policy/rv-lifepolicy_all
 {
   "policy": {
     "phases": {
       "hot": {
+        "min_age": "0ms",
         "actions": {
           "rollover": {
-            "max_age": "30d",
-            "max_size": "50gb"
-          },
-          "set_priority": {
-            "priority": 100
+            "max_primary_shard_size": "100mb",
+            "max_age": "10d"
           },
           "forcemerge": {
             "max_num_segments": 1
+          },
+          "set_priority": {
+            "priority": 100
           }
-        },
-        "min_age": "0ms"
+        }
       },
       "warm": {
-        "min_age": "30d",
+        "min_age": "10d",
         "actions": {
-          "set_priority": {
-            "priority": 50
-          },
+          "readonly": {},
           "shrink": {
             "number_of_shards": 1
           },
-          "allocate": {
-            "number_of_replicas": 1
+          "set_priority": {
+            "priority": 50
           },
-          "readonly": {}
+          "allocate": {
+            "number_of_replicas": 0
+          }
         }
       },
       "cold": {
-        "min_age": "40d",
+        "min_age": "20d",
         "actions": {
           "set_priority": {
             "priority": 0
@@ -52,9 +55,11 @@ PUT _ilm/policy/rv-lifepolicy
         }
       },
       "delete": {
-        "min_age": "50d",
+        "min_age": "30d",
         "actions": {
-          "delete": {}
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
         }
       }
     }
@@ -65,15 +70,14 @@ PUT _ilm/policy/rv-lifepolicy
 Menu => Stack Management => Index management => Index template => Create template
 # ** CLI **
 ```
-# Index template for index - NGINX
-PUT _index_template/nginx
+PUT _index_template/rv-index_template
 {
   "template": {
     "settings": {
       "index": {
         "lifecycle": {
-          "name": "rv-lifepolicy",
-          "rollover_alias": "nginx"
+          "name": "rv-lifepolicy_all",
+          "rollover_alias": "rv_index_template"
         },
         "number_of_shards": "1",
         "auto_expand_replicas": "0-1",
@@ -82,7 +86,10 @@ PUT _index_template/nginx
     }
   },
   "index_patterns": [
-    "nginx-*"
+    "rv-site_nginx-*"б
+    б
+    фвф
+    бфыв
   ],
   "composed_of": []
 }
@@ -91,7 +98,7 @@ PUT _index_template/nginx
 
 ### 3. create new index nginx-000001 with alias nginx for index pattern alias - nginx
 ```
-PUT nginx-000001
+PUT rv-site_nginx-000001
 {
   "aliases": {
     "nginx": {
@@ -102,7 +109,7 @@ PUT nginx-000001
 
 # second example!
 # create new index with mappings status field = long (number) and remote_addr = ip
-PUT nginx-000001
+PUT rv-site_nginx-000001
 {
   "aliases": {
     "nginx": {
@@ -127,7 +134,7 @@ PUT nginx-000001
 ### 5. Delete indexes
 # delete data in index
 ```
-POST nginx-000001/_delete_by_query
+POST rv-site_nginx-000001/_delete_by_query
 {
   "query": {
     "match_all": {}
@@ -137,22 +144,22 @@ POST nginx-000001/_delete_by_query
 # delete index
 ```
 # for delete index, stop new dataflow, e.g. fluentbit
-DELETE /nginx-000001/_alias/nginx
-DELETE /nginx-000001
+DELETE /rv-site_nginx-000001/_alias/nginx
+DELETE /rv-site_nginx-000001
 
 ```
 
 # OTHER
 ### 4. Применение шаблона ко всем существующим индексам
 ```
-PUT td*/_settings
+PUT rv-site_nginx-*/_settings
 {
-  "index.lifecycle.name": "lifecycle-policy" 
+  "index.lifecycle.name": "rv-lifepolicy_all" 
 }
 
-td*/_ - index pattern name
+rv-site_nginx-* - index pattern name
 ```
 ### 5. CHECK policy
 ```
-GET td*/_ilm/explain
+GET rv-site_nginx-*/_ilm/explain
 ```
