@@ -62,18 +62,16 @@ PUT _ilm/policy/rv-lifepolicy_all
 Menu => Stack Management => Index management => Index template => Create template
 # ** CLI **
 ```
+!!!! rollover_alias==alias !!!
 
 PUT _index_template/rv-index_template
 {
   "template": {
-    "aliases": {
-      "rv-site_nginx": {}
-    },
     "settings": {
       "index": {
         "lifecycle": {
           "name": "rv-lifepolicy_all",
-          "rollover_alias": "rv-index_template"
+          "rollover_alias": "rv-site_nginx"
         },
         "codec": "best_compression",
         "number_of_shards": "1",
@@ -83,7 +81,8 @@ PUT _index_template/rv-index_template
   },
   "index_patterns": [
     "rv-site_nginx-*"
-  ]
+  ],
+  "composed_of": []
 }
 
 
@@ -151,6 +150,13 @@ PUT rv-site_nginx-*/_settings
 }
 
 rv-site_nginx-* - index pattern name
+
+# START/STOP ILM
+POST /_ilm/stop
+POST /_ilm/start
+
+
+
 ```
 ### 5. CHECK policy
 ```
