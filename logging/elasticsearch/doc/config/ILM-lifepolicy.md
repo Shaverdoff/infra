@@ -105,7 +105,7 @@ PUT rv-site_nginx-000001
 PUT rv-site_nginx-000001
 {
   "aliases": {
-    "nginx": {
+    "rv-site_nginx": {
       "is_write_index": true
     }
   },
