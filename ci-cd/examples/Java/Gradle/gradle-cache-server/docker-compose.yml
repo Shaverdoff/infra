@@ -1,0 +1,6 @@
+version: "3.8"
+services:
+  gradle:
+    image: gradle/build-cache-node
+    ports:
+      - "5071:5071"
