@@ -1,0 +1,6 @@
+cat /etc/docker/daemon.json 
+{
+"data-root": "/data/docker",
+"insecure-registries": ["172.29.1.1:5000"]
+}
+и storage driver лучше overlay2 выбирать. Вроде как он постабильнее работает.

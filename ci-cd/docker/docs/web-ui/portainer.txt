@@ -1,0 +1,15 @@
+WEB UI Portainer 
+https://letsclearitup.com.ua/docker/portainer-webui-dlya-upravleniya-docker-konteynerami.html
+docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
+http://ip_address:9000
+
+COMPOSE
+version: "2"
+services:
+  portainer:
+    image: portainer/portainer
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9000:9000

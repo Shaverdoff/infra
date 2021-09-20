@@ -1,0 +1,16 @@
+Перенос образа на другой сервер
+Сохранение образа
+docker commit 4c0646bfe3f1 mongo123/server250:tag1
+4c0646bfe3f1 – название контейнера
+mongo123 – кто сохранил
+server250 – какой сервер например
+tag1 –версия образа
+docker save server38 > server38.tar.gz
+Сохранение образа в архив
+Распаковка образа
+docker load < server38.tar.gz
+Поднимаем контейнер используя его
+docker run --name mongo -v /home/test/mongo:/mnt -d -p 27017:27017 server38:tag1
+
+Разница между docker save & docker export
+При экспорте не сохраняются мета-данные и история

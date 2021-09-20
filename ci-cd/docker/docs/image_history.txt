@@ -1,0 +1,7 @@
+Список изменений в контейнере
+С момента его запуска
+docker container diff <container_name>
+
+docker container diff difftest
+для получения всей истории
+docker exec difftest cat /root/.ash_history

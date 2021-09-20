@@ -1,0 +1,33 @@
+Освобождение места:
+# удаление неиспользуемого
+docker system prune
+# Удаление всех образов не используемых контейнерами, а не только остановленные
+docker image prune -a
+# Удаляем образы которые не имеют NAME & TAG - remove images as possible that has no name/tag
+docker images -a|grep '^<none>'|tr -s ' '|cut -d' ' -f 3|xargs docker rmi
+
+# Удаляем большие логи
+идем в каталог контейнеров и удаляем большие логи
+/var/lib/docker/containers
+du -s *|sort -nr|cut -f 2-|while read a;do du -hs $a;done
+rm -rf 76c186f07fabe4e7476155b87cb46a099c37662bcb0f3f91e3e193dacfa92435-json.log
+перезапустить docker restart контейнер
+
+# EXAMPLE
+# Идем в папку и смотрим размер самого большого контейнера
+sudo su -
+cd /var/lib/docker/aufs/diff
+du -s *|sort -nr|cut -f 2-|while read a;do du -hs $a;done
+находим самую большую по размеру папку
+cd 26f00c2d355d565be8df112465d481947fabee58f4583c61d09c473ac6de0a31
+cd root
+cd application-service
+cd documents
+Удаляем все файлы по фильтру – имя содержит 1131
+find /mnt/sda1/var/lib/docker/aufs/diff/4496bb8734cd73ba21688f746ebda9bc27831c303957e8d5c93e3566c1ed3ea1/root/application-service/documents -type f -name "1131*" –delete
+Удаляем старше 20 дней
+find /home/as-files/documents -mtime +20 -exec rm -rf {} \;
+
+!!!!! удаление всего
+docker rmi -f $(docker images -aq)
+

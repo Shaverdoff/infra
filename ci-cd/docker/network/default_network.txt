@@ -1,0 +1,4 @@
+/etc/docker/daemon.json
+{
+  "bip": "172.26.0.1/16"
+}

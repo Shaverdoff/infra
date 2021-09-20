@@ -1,0 +1,11 @@
+Резервная копия и восстановление контейнера
+Выполнить резервное копирование каталога с данными из контейнера в хост-машину:
+docker container run --rm --volumes-from [SOURCE_CONTAINER]:ro -v $(pwd):/backup alpine \
+ tar cvf /backup/backup_$(date +%Y-%m-%d_%H-%M).tar /data
+Восстановить данные из резервной копии на хост-машине внутрь контейнера
+docker container run --rm --volumes-from [TARGET_CONTAINER]:ro -v $(pwd):/backup alpine \
+ tar xvf /backup/backup.tar
+
+Копирование в контейнер и из него
+docker cp foo.txt mycontainer:/foo.txt
+docker cp mycontainer:/foo.txt foo.txt

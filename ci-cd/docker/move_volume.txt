@@ -1,0 +1,19 @@
+Бэкапим их в архив и копируем его на другой сервер. 
+Разорхивируем в папку volumes. 
+Делаем рестарт докера и docker volume ls
+
+tar cf /srv/volumes_bcp22.tar /var/lib/docker/volumes/
+systemctl restart docker
+docker volume ls
+
+Либо так
+# BACKUP VOLUME
+docker run --rm --volumes-from nginx  -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /example
+nginx - container name
+$(pwd):/backup - текущая папка куда сохранится архив
+/backup/backup.tar - имя архива
+/example - название volume
+
+# RESTORE VOLUME
+docker run -p 81:81 -p 444:444  -v /example --name nginx2 -itd nginx
+docker run --rm --volumes-from nginx2 -v $(pwd):/backup ubuntu bash -c "cd /example && tar xvf /backup/backup.tar --strip 1"
