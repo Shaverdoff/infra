@@ -1,0 +1,20 @@
+log:
+  level: debug
+
+gitlab:
+  url: https://git.company.ru/
+  token: V5T
+
+# Pull jobs related metrics on all projects
+project_defaults:
+  pull:
+    environments:
+      enabled: true
+      name_regexp: '^prod.*'
+    pipeline:
+      jobs:
+        enabled: true
+
+# Example public projects to monitor
+projects:
+  - name: DevOps/rv-site/docker

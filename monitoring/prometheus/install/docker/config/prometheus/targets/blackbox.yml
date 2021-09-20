@@ -1,0 +1,12 @@
+####################
+# Monitor tools
+####################
+- targets:
+  - https://zabbix.company.ru/
+  labels:
+    env: prod
+    tier: monitoring
+    job: blackbox
+    role: monitoring
+    tag: monitoring
+

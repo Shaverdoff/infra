@@ -1,0 +1,9 @@
+---
+http.host: "0.0.0.0"
+node.name: logstash.company.ru
+path.config: /etc/logstash/conf.d/*.conf
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.username: elastic
+xpack.monitoring.elasticsearch.password: 'QWE123qwe'
+xpack.monitoring.elasticsearch.hosts: [ 'https://es01.company.ru:9200' ]
+xpack.monitoring.elasticsearch.ssl.certificate_authority: /etc/logstash/certificates/company.crt

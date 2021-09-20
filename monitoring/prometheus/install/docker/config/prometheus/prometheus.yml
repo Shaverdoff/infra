@@ -1,0 +1,172 @@
+global:
+  # How frequently to scrape targets
+  scrape_interval:     10s
+  # How frequently to evaluate rules
+  evaluation_interval: 10s
+  external_labels:
+    monitor: 'RV-PROMETHEUS' # label for slack alerts
+
+rule_files:
+  - 'rules/common.yml'
+  - 'rules/node.yml'
+  - 'rules/k8s.yml'
+  - 'rules/nginx.yml'
+  - 'rules/blackbox.yml'
+  - 'rules/php.yml'
+  - 'rules/memcached.yml'
+  - 'rules/mysql.yml'
+  - 'rules/elasticsearch.yml'
+  - 'rules/gitlab.yml'
+  - 'rules/java.yml'
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+    - targets: 
+      - 'localhost:9090'
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    scrape_interval: 35s
+    params:
+      module: [http_2xx]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115 # The blackbox exporter.
+    file_sd_configs:
+    - files:
+      - targets/blackbox.yml
+
+  - job_name: 'federate'
+    scrape_interval: 15s
+    honor_labels: true
+    metrics_path: '/federate'
+    params:
+      match[]:
+        - '{job=~".+"}'
+    #  'match[]':
+    #    - '{job="prometheus"}'
+    #    - '{__name__=~"job:.*"}'
+    static_configs:
+      - targets:
+        - 'k8sprom.company.ru'
+
+  - job_name: 'elasticsearch'
+    metrics_path: "/metrics"
+    scrape_interval: 60s
+    scrape_timeout:  30s
+    file_sd_configs:
+    - files:
+      - targets/elasticsearch.yml
+
+  - job_name: 'nginx-exporter'
+    # This rule translates foo{instance="bar:123"} to foo{instance="bar"}.
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+    file_sd_configs:
+      - files:
+        - targets/nginx.yml
+
+  - job_name: 'node-exporter'
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+    file_sd_configs:
+      - files:
+        - targets/node-exporter.yml
+
+  - job_name: 'php-fpm-exporter'
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+    file_sd_configs:
+      - files:
+        - targets/php-fpm.yml
+
+  - job_name: 'mysqld'
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+    file_sd_configs:
+    - files:
+      - targets/mysql.yml
+
+  - job_name: 'memcached'
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+    file_sd_configs:
+    - files:
+      - targets/memcached.yml
+
+  - job_name: 'springactuator'
+    metrics_path: '/api/actuator/prometheus'
+    scrape_interval: 10s
+    file_sd_configs:
+      - files:
+        - targets/springactuator.yml
+
+  - job_name: 'ceph'
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+    file_sd_configs:
+      - files:
+        - targets/ceph.yml
+
+  #- job_name: 'snmp'
+  #  file_sd_configs:
+  #    - files:
+  #      - targets/snmp.yml
+  #  metrics_path: /snmp
+  #  params:
+  #    module: [if_mib]
+  #  relabel_configs:
+  #    - source_labels: [__address__]
+  #      target_label: __param_target
+  #    - source_labels: [__param_target]
+  #      target_label: instance
+  #    - target_label: __address__
+  #      replacement: snmp:9116  # The SNMP exporter's real hostname:port.
+
+  - job_name: gitlab-runner
+    static_configs:
+      - targets:
+        - 10.3.3.191:9252
+        - 10.3.3.195:9252
+
+  - job_name: 'gitlab-ci-pipelines-exporter'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    file_sd_configs:
+      - files:
+        - targets/gitlab.yml
+
+
+
+
+
+
+
+
+
+

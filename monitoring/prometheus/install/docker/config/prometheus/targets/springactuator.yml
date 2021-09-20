@@ -1,0 +1,11 @@
+####################
+# RV-SITE
+####################
+## MICROSERVICES
+- targets:
+  - jms.company.ru
+  labels:
+    tier: miscroservice
+    env: prod
+    job: springactuator
+    tag: Miscroservice

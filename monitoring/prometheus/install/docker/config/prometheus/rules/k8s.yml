@@ -1,0 +1,254 @@
+####################
+#### Kubernetes ####
+####################
+groups:
+- name: k8s-rules
+  rules:
+############################
+#### JOBS               ####
+############################
+  - alert: KubernetesJobFailed
+    expr: kube_job_status_failed > 0 and kube_job_status_failed{namespace!="synccontacts-32-default"}
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes Job failed (instance {{ $labels.instance }})
+      description: "Job {{$labels.namespace}}/{{$labels.exported_job}} failed to complete\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesCronjobSuspended
+    expr: kube_cronjob_spec_suspend != 0
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes CronJob suspended (instance {{ $labels.instance }})
+      description: "CronJob {{ $labels.namespace }}/{{ $labels.cronjob }} is suspended\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesCronjobTooLong
+    expr: time() - kube_cronjob_next_schedule_time > 7200
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes CronJob too long (instance {{ $labels.instance }})
+      description: "CronJob {{ $labels.namespace }}/{{ $labels.cronjob }} is taking more than 1h to complete.\n  VALUE = {{ $value }}\n"
+
+  - alert: KubernetesJobSlowCompletion
+    expr: kube_job_spec_completions - kube_job_status_succeeded > 0 and kube_job_status_succeeded{namespace!="synccontacts-32-default"}
+    for: 12h
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes job slow completion (instance {{ $labels.instance }})
+      description: "Kubernetes Job {{ $labels.namespace }}/{{ $labels.job_name }} did not complete in time.\n  VALUE = {{ $value }}\n"
+############################
+#### PVC               ####
+  - alert: KubernetesPersistentvolumeclaimPending
+    expr: kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes PersistentVolumeClaim pending (instance {{ $labels.instance }})
+      description: "PersistentVolumeClaim {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is pending\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesVolumeOutOfDiskSpace
+    expr: kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes * 100 < 10 and kubelet_volume_stats_available_bytes{namespace!="dsa-85-prod"}
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes Volume out of disk space (instance {{ $labels.instance }})
+      description: "Volume is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesVolumeFullInFourDays
+    expr: predict_linear(kubelet_volume_stats_available_bytes[6h], 4 * 24 * 3600) < 0 and kubelet_volume_stats_available_bytes{namespace!="dsa-85-prod"}
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes Volume full in four days (instance {{ $labels.instance }})
+      description: "{{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is expected to fill up within four days. Currently {{ $value | humanize }}% is available."
+
+  - alert: KubernetesPersistentvolumeError
+    expr: kube_persistentvolume_status_phase{phase=~"Failed|Pending", job="kube-state-metrics"} > 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes PersistentVolume error (instance {{ $labels.instance }})
+      description: "Persistent volume is in bad state\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+############################
+############################
+#### PODS               ####
+############################
+  - alert: KubernetesContainerOomKiller
+    expr: (kube_pod_container_status_restarts_total - kube_pod_container_status_restarts_total offset 10m >= 1) and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}[10m]) == 1
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes container oom killer (instance {{ $labels.instance }})
+      description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has been OOMKilled {{ $value }} times in the last 10 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: Pod Container Not Ready
+    annotations:
+      description: '{{ $labels.container }} from pod {{ $labels.pod }} in namespace {{ $labels.namespace }} not ready more than 2 minutes.'
+      summary: '{{ $labels.container }} from pod {{ $labels.pod }} not ready'
+    expr: kube_pod_container_status_ready != 1 and kube_pod_container_status_ready{namespace!="synccontacts-32-default"} and kube_pod_container_status_ready{namespace!="logging"} and kube_pod_container_status_ready{namespace!="gitlab-runner"} and kube_pod_container_status_ready{namespace!="dsa-85-prod"} and kube_pod_container_status_ready{namespace!="moon"} and kube_pod_container_status_ready{container!="msss-search-country"}
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: Pod Status Not Ready
+    annotations:
+      description: '{{ $labels.condition }} of pod {{ $labels.pod }} in namespace {{$labels.namespace }} more than 2 minutes.'
+      summary: '{{ $labels.condition }} of pod {{ $labels.pod }}'
+    expr: kube_pod_status_ready{namespace="default", condition!="true" } == 1
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: KubeletTooManyPods
+    annotations:
+      description: Kubelet '{{ $labels.node }}' is running at {{ $value | humanizePercentage }} of its Pod capacity.
+      summary: Kubelet is running at capacity.
+    expr: count by(node) ((kube_pod_status_phase{phase="Running"} == 1) * on(instance, pod, namespace, cluster) group_left(node) topk by(instance, pod, namespace, cluster) (1, kube_pod_info{job="kube-state-metrics"})) / max by(node) (kube_node_status_capacity{resource="pods"} != 1) > 0.95
+    for: 15m
+    labels:
+      severity: warning
+      tag: "{{ $labels.tag }}"
+
+  - alert: KubernetesPodNotHealthy
+    expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[15m:1m]) > 0 and kube_pod_status_phase{namespace!="moon"} 
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes Pod not healthy (instance {{ $labels.instance }})
+      description: "Pod has been in a non-ready state for longer than 15 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesPodCrashLooping
+    expr: increase(kube_pod_container_status_restarts_total[1m]) > 3
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes pod crash looping (instance {{ $labels.instance }})
+      description: "Pod {{ $labels.pod }} is crash looping\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesReplicassetMismatch
+    expr: kube_replicaset_spec_replicas != kube_replicaset_status_ready_replicas
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: Kubernetes ReplicasSet mismatch (instance {{ $labels.instance }})
+      description: "Deployment Replicas mismatch\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+############################
+#### NODES              ####
+############################
+
+  - alert: Node Status Not Ready
+    annotations:
+      description: 'Status {{ $labels.status }} of node {{ $labels.node }} more than 2 minutes.'
+      summary: Status {{ $labels.status }} of node {{ $labels.node }}
+    expr: kube_node_status_condition{condition="Ready", status!="true" } == 1
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: KubernetesDiskPressure
+    expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes disk pressure (instance {{ $labels.instance }})
+      description: "{{ $labels.node }} has DiskPressure condition\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesOutOfDisk
+    expr: kube_node_status_condition{condition="OutOfDisk",status="true"} == 1
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes out of disk (instance {{ $labels.instance }})
+      description: "{{ $labels.node }} has OutOfDisk condition\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubernetesMemoryPressure
+    expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes memory pressure (instance {{ $labels.instance }})
+      description: "{{ $labels.node }} has MemoryPressure condition\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: KubeNodeUnreachable
+    annotations:
+      description: '{{ $labels.node }} is unreachable and some workloads may be rescheduled.'
+      summary: Node is unreachable.
+    expr: (kube_node_spec_taint{effect="NoSchedule",key="node.kubernetes.io/unreachable"} unless ignoring(key, value) kube_node_spec_taint{key=~"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn"}) == 1
+    for: 15m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: KubeNodeNotReady
+    annotations:
+      description: '{{ $labels.node }} has been unready for more than 15 minutes.'
+      summary: Node is not ready.
+    expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+    for: 15m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+      
+############################
+#### SYSTEM              ####
+############################
+  - alert: KubeVersionMismatch
+    annotations:
+      description: There are {{ $value }} different semantic versions of Kubernetes components running.
+      summary:  Different semantic versions of Kubernetes components running.
+    expr: count(count by(git_version) (label_replace(kubernetes_build_info{job!~"kube-dns|coredns"}, "git_version", "$1", "git_version", "(v[0-9]*.[0-9]*).*"))) > 1
+    for: 15m
+    labels:
+      severity: warning
+      tag: "{{ $labels.tag }}"
+
+  - alert: KubeletDown
+    annotations:
+      description: Kubelet has disappeared from Prometheus target discovery.
+      summary: Target disappeared from Prometheus target discovery.
+    expr: absent(up{job="kubelet",metrics_path="/metrics"} == 1)
+    for: 15m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: KubeAPIDown
+    annotations:
+      description: KubeAPI has disappeared from Prometheus target discovery.
+      summary: Target disappeared from Prometheus target discovery.
+    expr: absent(up{job="apiserver"} == 1)
+    for: 15m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: CorednsPanicCount
+    expr: increase(coredns_panics_total[1m]) > 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: CoreDNS Panic Count (instance {{ $labels.instance }})
+      description: "Number of CoreDNS panics encountered\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

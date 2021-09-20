@@ -1,0 +1,38 @@
+---
+apm-server:
+  host: "0.0.0.0:8200"
+
+  rum:
+    enabled: true
+
+  ssl:
+    enabled: true
+    certificate: "/usr/share/apm-server/config/certs/company.crt"
+    key: "/usr/share/apm-server/config/certs/company.key"
+
+  kibana:
+    enabled: true
+    host: "kibana.company.ru:5601"
+    protocol: "https"
+    username: "elastic"
+    password: "QWE123qwe"
+    ssl.enabled: true
+    ssl.certificate_authorities: ["/usr/share/apm-server/config/certs/company.crt"]
+    ssl.certificate: "/usr/share/apm-server/config/certs/company.crt"
+    ssl.key: "/usr/share/apm-server/config/certs/company.key"
+
+
+setup.template.settings:
+  index:
+    number_of_replicas: 0
+
+output.elasticsearch:
+  hosts: ["es01.company.ru:9200"]
+  protocol: "https"
+  username: "elastic"
+  password: "QWE123qwe"
+  ssl.enabled: true
+  ssl.certificate_authorities: ["/usr/share/apm-server/config/certs/company.crt"]
+  ssl.certificate: "/usr/share/apm-server/config/certs/company.crt"
+  ssl.key: "/usr/share/apm-server/config/certs/company.key"
+

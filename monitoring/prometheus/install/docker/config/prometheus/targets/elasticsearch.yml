@@ -1,0 +1,8 @@
+- targets:
+  - 10.3.3.206:9114
+  labels:
+    env: prod
+    tier: rv_site
+    job: elasticsearch
+    role: database
+    tag: 'elasticsearch'

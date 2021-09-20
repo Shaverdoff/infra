@@ -1,0 +1,13 @@
+####################
+# RV-SITE
+####################
+## frontend
+- targets:
+  - rv-site-00:9113
+  labels:
+    env: prod
+    tier: rv_site
+    job: nginx-exporter
+    role: frontend
+    tag: 'rv_front_nginx'
+

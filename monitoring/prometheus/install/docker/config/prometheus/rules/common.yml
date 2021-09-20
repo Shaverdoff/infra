@@ -1,0 +1,31 @@
+groups:
+- name: common-rules
+  rules:
+    # Alert for any instance that is unreachable for >2 minutes.
+  - alert: Service Down
+    # Condition for alerting (if up != 1)
+    expr: up ==0 and up{job!="kube-proxy"} and up{namespace!="kube-system"}
+    for: 1m
+    # Labels - additional labels to be attached to the alert
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"      
+    # Annotation - additional informational labels to store more information
+    annotations:
+      title: "Instance {{ $labels.instance }} down"
+      description: "{{ $labels.instance }} of job {{ $labels.job }} down, 1m"
+
+
+  #- alert: NamedDown
+  #  annotations:
+  #    description: Named on {{ $labels.instance }} is down.
+  #    summary: Named on {{ $labels.instance }} is down.
+  #  expr: node_systemd_unit_state{name="named-chroot-setup.service",state="active"}
+  #    != 1
+  #  for: 1m
+  #  labels:
+  #    severity: critical
+
+
+
+

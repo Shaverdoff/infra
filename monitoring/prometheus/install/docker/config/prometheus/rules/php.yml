@@ -1,0 +1,34 @@
+##################
+#### SITE-php ####
+##################
+groups:
+- name: php-rules
+  rules:
+  - alert: PHP No Idle Proc
+    annotations:
+      description: 'No idle PHP-FPM proc on {{ $labels.instance}} more than 2 minutes. Tag {{ $labels.tag }}'
+      summary: No idle PHP-FPM proc on {{ $labels.instance}}
+    expr: phpfpm_total_processes{state="idle", env="prod", tag="RV-SITE_back"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: PHP Down
+    annotations:
+      description: No idle PHP-FPM proc on {{ $labels.instance}} more than 2 minutes.
+      summary: No idle PHP-FPM proc on {{ $labels.instance}}
+    expr: phpfpm_up{env="prod", tag="RV-SITE_back"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: Php-fpmMax-childrenReached
+    expr: sum(phpfpm_max_children_reached_total) by (instance) > 0
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: PHP-FPM max-children reached (instance {{ $labels.instance }})
+      description: "PHP-FPM reached max children - {{ $labels.instance }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

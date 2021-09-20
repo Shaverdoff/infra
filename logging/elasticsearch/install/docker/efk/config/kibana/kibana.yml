@@ -1,0 +1,17 @@
+---
+# Default Kibana configuration for docker target
+server.name: "kibana.company.ru"
+server.host: "0.0.0.0"
+server.publicBaseUrl: "https://efk.company.ru"
+monitoring.ui.container.elasticsearch.enabled: true
+xpack.security.encryptionKey: "EePXCifCaykPORQwxcGbINHCPFYnNXZT"
+xpack.encryptedSavedObjects.encryptionKey: "EePXCifCaykPORQwxcGbINHCPFYnNXZT"
+xpack.apm.ui.transactionGroupBucketSize: "2500" #Default 1000
+server.ssl.enabled: true
+#elasticsearch.ssl.verificationMode: "none"
+server.ssl.certificate: /usr/share/elasticsearch/certificates/company.crt
+server.ssl.key: /usr/share/elasticsearch/certificates/company.key
+elasticsearch.hosts: [ "https://es01.company.ru:9200" ]
+elasticsearch.username: "elastic"
+elasticsearch.password: "QWE123qwe"
+elasticsearch.ssl.certificateAuthorities: [ "/usr/share/elasticsearch/certificates/company.crt" ]

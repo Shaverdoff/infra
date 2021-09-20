@@ -1,0 +1,11 @@
+####################
+# UPS
+####################
+- targets:
+  - 172.16.0.196
+  labels:
+    env: prod
+    tier: monitoring
+    job: snmp
+    role: UPS
+    tag: UPS

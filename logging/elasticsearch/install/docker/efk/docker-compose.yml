@@ -1,0 +1,150 @@
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    container_name: es01.company.ru
+    restart: always
+    environment:
+      cluster.name: "elk"
+      node.name: es01
+      ELASTIC_PASSWORD: QWE123qwe
+      ES_JAVA_OPTS: "-Xms12g -Xmx12g" # 50% of ram
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+    - IPC_LOCK
+    ports:
+      - 9200:9200
+    volumes:
+      - efk_data1:/usr/share/elasticsearch/data
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./certs:/usr/share/elasticsearch/config/certificates
+    expose:
+      - 9200
+    networks:
+      - efk_stack
+
+  logstash:
+    image: logstash:7.14.0
+    container_name: logstash.company.ru
+    restart: always
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5044:5044
+      - 12345:12345
+      - 12346:12346
+      - 9600:9600
+      - 9998:9995/udp
+      - 9999:9996/udp
+    volumes:
+      - ./config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./config/logstash/conf.d/:/etc/logstash/conf.d/
+      - ./certs:/etc/logstash/certificates
+    networks:
+      - efk_stack
+
+  fluentbit:
+    image: fluent/fluent-bit:latest
+    container_name: fluentbit.company.ru
+    volumes:
+      - ./config/fluentbit:/fluent-bit/etc
+    depends_on:
+      - elasticsearch
+    ports:
+      - 24224:24224
+      - 5140:5140/udp
+      - 2020:2020
+    networks:
+      - efk_stack
+        
+  kibana:
+    image: kibana:7.14.0
+    container_name: kibana.company.ru
+    restart: always
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - /etc/localtime:/etc/localtime:ro
+      - ./certs:/usr/share/elasticsearch/certificates
+    expose:
+      - 5601
+    networks:
+      - efk_stack
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    restart: always
+    depends_on:
+      - kibana
+    volumes:
+      - ./config/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./config/nginx/common:/etc/nginx/common
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/pki/tls/certs/ca-bundle.crt:/etc/pki/tls/certs/ca-bundle.crt
+      - ./certs:/certs
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - efk_stack
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.13.4
+    container_name: apm.company.ru
+    restart: always
+    user: root
+    depends_on:
+      - elasticsearch
+      - kibana
+    volumes:
+      - ./config/apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml
+      - ./certs:/usr/share/apm-server/config/certs
+    cap_add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
+    cap_drop: ["ALL"]
+    command: apm-server -e --strict.perms=false
+         #-E apm-server.rum.enabled=true
+         #-E setup.kibana.host=kibana:5601
+         #-E setup.template.settings.index.number_of_replicas=0
+         #-E apm-server.kibana.enabled=true
+         #-E apm-server.kibana.host=kibana:5601
+         #-E output.elasticsearch.hosts=["es01:9200"]
+    ports:
+      - 8200:8200
+    expose:
+      - 8200
+    networks:
+      - efk_stack
+    #healthcheck:
+    #  interval: 10s
+    #  retries: 12
+    #  test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+
+volumes:
+  efk_data1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/data/efk_storage/es1'
+
+networks:
+  efk_stack:
+#    driver: bridge
+#env
+#VERSION=7.10
+#nano /etc/sysctl.conf
+#vm.max_map_count = 262144
+#sudo sysctl -p
+# curl -X GET "localhost:9200/_cat/nodes?v&pretty"

@@ -1,0 +1,12 @@
+####################
+# RV-SITE
+####################
+## MEMCACHED
+- targets:
+  - memcached.test.ru:9150
+  labels:
+    env: prod
+    tier: rv_site
+    job: memcached
+    role: cache
+    tag: 'rv_memcached'

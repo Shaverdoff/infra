@@ -1,0 +1,24 @@
+---
+variables:
+  SSH_CONFIG: "-o StrictHostKeyChecking=no"
+  DOCKER_LOGIN: "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD ${CI_REGISTRY}"
+
+stages:
+  - deploy
+    
+efk:
+  stage: deploy
+  script:
+    - sudo cp linux/sysctl.d/* /etc/sysctl.d/ && sudo sysctl -p 
+    - sudo cp linux/limits.d/* /etc/security/limits.d/
+    - $DOCKER_LOGIN
+    - docker-compose pull
+    - docker-compose up -d --force-recreate
+  only:
+    refs:
+      - master
+  when: manual
+  tags:
+    - efk_shell
+
+

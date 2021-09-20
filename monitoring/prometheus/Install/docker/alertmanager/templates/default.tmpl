@@ -1,6 +1,0 @@
-{{ define "rocketchat.text" }}
-{{ define "__alertname" }}{{ .job }}|{{ .Status }}|{{ .alert }}{{ end }}
-{{ define "__severity" }}{{ .labels.severity }}{{ end }}
-{{ define "__description" }}{{ .annotations.description }}{{ end }}
-{{ define "__tag" }}{{ .labels.tag }}{{ end }}
-{{ end }}

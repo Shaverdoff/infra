@@ -1,0 +1,29 @@
+[[servers]]
+host = "company.ru"
+port = 389
+use_ssl = false
+start_tls = false
+ssl_skip_verify = false
+bind_dn = "CN=grafana,OU=Служебные учетные записи,DC=company,DC=ru"
+bind_password = 'Grafana'
+search_filter = "(sAMAccountName=%s)"
+search_base_dns = ["dc=company,dc=ru"]
+[servers.attributes]
+name = "givenName"
+surname = "sn"
+username = "cn"
+member_of = "memberOf"
+email =  "mail"
+
+# Map ldap groups to grafana org roles
+[[servers.group_mappings]]
+group_dn = "CN=Grafana_Admin,DC=company,DC=ru"
+org_role = "Admin"
+
+[[servers.group_mappings]]
+group_dn = "cn=users,dc=grafana,dc=org"
+org_role = "Editor"
+
+[[servers.group_mappings]]
+group_dn = "*"
+org_role = "Viewer"

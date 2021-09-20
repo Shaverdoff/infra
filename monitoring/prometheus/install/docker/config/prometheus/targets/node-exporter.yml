@@ -1,0 +1,8 @@
+- targets:
+  - rv-site-00:9100
+  labels:
+    env: prod
+    tier: rv_site
+    job: node-exporter
+    role: frontend
+    tag: rv_frontend_node

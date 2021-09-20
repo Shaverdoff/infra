@@ -1,0 +1,11 @@
+####################
+# Ceph nodes
+####################
+- targets:
+  - ceph01.company.ru:9283
+  labels:
+    env: prod
+    tier: s3
+    job: ceph
+    role: s3
+    tag: 'ceph'

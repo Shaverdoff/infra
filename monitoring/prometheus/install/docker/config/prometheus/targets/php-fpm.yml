@@ -1,0 +1,12 @@
+####################
+# RV-SITE
+####################
+## backend
+- targets:
+  - rv-site-back00:9253
+  labels:
+    env: prod
+    tier: rv_site
+    job: php-fpm-exporter
+    role: backend
+    tag: rv_backend_php

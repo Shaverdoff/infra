@@ -1,0 +1,63 @@
+####################
+#### Site-nginx ####
+####################
+groups:
+- name: nginx-rules
+  rules:
+  - alert: Nginx Zero Connection
+    annotations:
+      description: '{{ $labels.condition }} active connection on {{ $labels.instance }}. Tag {{ $labels.tag }}'
+      summary: '{{ $labels.condition }} active connection on {{ $labels.instance }}'
+    expr: nginx_connections_active {env="prod", tag="RV-SITE_front"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: Nginx Active Connections IS OVER 5000
+    annotations:
+      description: '{{ $labels.condition }} active connection on {{ $labels.instance }} Tag {{ $labels.tag }}'
+      summary: '{{ $labels.condition }} active connection is {{ $value }} its less or more then range 100-6500 {{ $labels.instance }}'
+    expr: nginx_connections_active {env="prod", tag="RV-SITE_front"} >= 5000
+    for: 1m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+      
+  - alert: Nginx Down
+    annotations:
+      description: '{{ $labels.condition }} Nginx is Down on {{ $labels.instance}}. Tag {{ $labels.tag }}'
+      summary: '{{ $labels.condition }} Nginx is Down on {{ $labels.instance }}'
+    #expr: nginx_up {env="prod", tag="RV-SITE_front"} == 0
+    expr: nginx_up == 0
+    for: 2m
+    labels:
+      severity: critical
+      tag: "{{ $labels.tag }}"
+
+  - alert: NginxHighHttp4xxErrorRate
+    expr: sum(rate(nginx_http_requests_total{status=~"^4.."}[1m])) / sum(rate(nginx_http_requests_total[1m])) * 100 > 5
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Nginx high HTTP 4xx error rate (instance {{ $labels.instance }})
+      description: "Too many HTTP requests with status 4xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: NginxHighHttp5xxErrorRate
+    expr: sum(rate(nginx_http_requests_total{status=~"^5.."}[1m])) / sum(rate(nginx_http_requests_total[1m])) * 100 > 5
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Nginx high HTTP 5xx error rate (instance {{ $labels.instance }})
+      description: "Too many HTTP requests with status 5xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: NginxLatencyHigh
+    expr: histogram_quantile(0.99, sum(rate(nginx_http_request_duration_seconds_bucket[2m])) by (host, node)) > 3
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Nginx latency high (instance {{ $labels.instance }})
+      description: "Nginx p99 latency is higher than 3 seconds\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

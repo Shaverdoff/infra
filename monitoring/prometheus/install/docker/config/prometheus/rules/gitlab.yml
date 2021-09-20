@@ -1,0 +1,25 @@
+##################
+#### Gitlab ####
+##################
+groups:
+- name: gitlab-rules
+  rules:
+  - alert: gitlab_ci_environment_deployment_status
+    expr: gitlab_ci_environment_deployment_status{env="prod", job="gitlab-exporter", role="gitlab"} !=1
+    for: 1m
+    labels:
+      severity: error
+      tag: "{{ $labels.tag }}"
+    annotations:
+      title: Status Code of Deployment {{ $labels.project }} {{ $labels.status }} - {{ $value }}"
+      description: "Deployment Status code is {{ $labels.status }}"
+
+  - alert: gitlab_ci_pipeline_job_status
+    expr: gitlab_ci_pipeline_job_status{env="prod", job="gitlab-exporter", role="gitlab"} !=1
+    for: 1m
+    labels:
+      severity: error
+      tag: "{{ $labels.tag }}"
+    annotations:
+      title: Status Code of Status Job {{ $labels.project }} {{ $labels.status }} {{ $labels.job_name }} - {{ $value }}"
+      description: "Job Status code is {{ $labels.status }}"

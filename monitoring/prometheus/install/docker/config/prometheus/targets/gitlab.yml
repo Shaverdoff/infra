@@ -1,0 +1,12 @@
+####################
+# CI
+####################
+## GITLAB
+- targets:
+  - gitlab-ci-pipelines-exporter:8080
+  labels:
+    env: prod
+    tier: devops
+    job: gitlab-exporter
+    role: gitlab
+    tag: devops
