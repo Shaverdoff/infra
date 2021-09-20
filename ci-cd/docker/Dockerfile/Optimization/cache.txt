@@ -1,0 +1,13 @@
+# CACHE BUILD
+yarn config set cache-folder .yarn
+Multi stage
+FROM node:alpine AS builder
+COPY ./ /tmp/build
+WORKDIR /tmp/build
+RUN yarn config set cache-folder .yarn && yarn install
+RUN yarn build
+
+FROM nginx:alpine
+COPY --from=builder /tmp/build/build /usr/share/nginx/html
+COPY ./deploy/ibuilding-nginx.conf /etc/nginx/conf.d/default.conf
+RUN rm -rf /tmp/build

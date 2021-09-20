@@ -1,0 +1,26 @@
+AUTO CLEANER
+nano /etc/systemd/system/docker-prune.service
+[Unit]
+Description=Docker prune images
+
+[Service]
+Type=oneshot
+TimeoutStartSec=0
+ExecStartPre=-/bin/sh -c "docker rm $(docker ps --quiet --filter status=exited)"
+ExecStart=-/bin/sh -c "/bin/docker rmi $(docker images --quiet --filter 'dangling=true')"
+ExecStartPre=-/bin/sh -c "docker rmi -f $(/usr/bin/docker images | grep "registry.shakticoin.com" | awk '/ / { print $3 }')"
+ExecStart=/usr/bin/docker volume prune -f
+WorkingDirectory=/tmp
+
+nano /etc/systemd/system/docker-prune.timer
+[Unit]
+Description=Docker prune
+[Timer]
+OnCalendar=daily
+Persistent=true
+[Install]
+WantedBy=timers.target
+
+systemctl daemon-reload
+systemctl restart docker-prune
+systemctl enable --now docker-prune.timer

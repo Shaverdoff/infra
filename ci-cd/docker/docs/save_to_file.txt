@@ -1,0 +1,27 @@
+SAVE IMAGES
+https://stackoverflow.com/questions/35575674/how-to-save-all-docker-images-and-copy-to-another-machine
+docker save $(docker images -q) -o /path/to/save/mydockersimages.tar
+If you want to save multiples images in one .tar file:
+
+IDS=$(docker images | awk '{if ($1 ~ /^(debian|centos)/) print $3}')
+docker save $IDS -o /path/to/save/somedockersimages.tar
+Finally, if you want to export multiple many images, with one .tar file per images (not disk efficient: common layer are saved in each .tar file):
+
+docker images | awk '{if ($1 ~ /^(openshift|centos)/) print $1 " " $2 " " $3 }' | tr -c "a-z A-Z0-9_.\n-" "%" | while read REPOSITORY TAG IMAGE_ID
+do
+  echo "== Saving $REPOSITORY $TAG $IMAGE_ID =="
+  docker  save   -o /path/to/save/$REPOSITORY-$TAG-$IMAGE_ID.tar $IMAGE_ID
+done
+You may also want to save the list of images so that the restored images can be tagged:
+
+docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > mydockersimages.list
+On the remote machine, you can load (import) the images:
+
+docker load -i /path/to/save/mydockersimages.tar
+and tag the imported images:
+
+while read REPOSITORY TAG IMAGE_ID
+do
+        echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
+        docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
+done < mydockersimages.list

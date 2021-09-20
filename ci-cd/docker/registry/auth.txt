@@ -1,0 +1,3 @@
+# DOCKER LOGIN
+docker login --username=CI0 --password=password registry.url
+docker login -u gitlab-ci-token -p $token registry.url

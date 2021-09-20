@@ -12,4 +12,8 @@ db.dropDatabase()
 exit;
 # restore
 mongorestore --db cl_352 --verbose /tmp/mongobackup_cl_352/cl_352/
+
+# Восстановление БД с авторизацией
+mongorestore --host databasehost:98761 --username restoreuser --password restorepwd --authenticationDatabase admin --db targetdb ./path/to/dump/
+
 ```
