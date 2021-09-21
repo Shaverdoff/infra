@@ -88,6 +88,15 @@ systemctl enable docker.service
 systemctl start docker.service
 docker ps -a
 
+# FIREWALLD
+On Worker Nodes open the following ports and restart the service
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10255/tcp
+firewall-cmd --permanent --add-port=8472/udp
+firewall-cmd --permanent --add-port=30000-32767/tcp
+firewall-cmd --add-masquerade --permanent
+systemctl restart firewalld
+
 
 # install k8s tools
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
@@ -107,7 +116,6 @@ systemctl enable --now kubelet
 kubectl version --client
 kubeadm version
 ```
-
 
 ### ADD NODE
 ```
