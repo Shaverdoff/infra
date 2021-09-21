@@ -1,0 +1,40 @@
+```
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  BROWSER: chrome
+  BROWSER_VERSION: "92.0"
+  THREADS: 4
+  BROWSER_SIZE: "1024x768"
+  BROWSER_MOBILE: ""
+  ALLURE_LAUNCH_NAME: "${CI_PROJECT_NAME} - ${CI_COMMIT_SHORT_SHA}" #mandatory
+  ALLURE_LAUNCH_TAGS: "regular, ${CI_COMMIT_REF_NAME}" #mandatory
+  ALLURE_TESTPLAN_PATH: "./testplan.json" #mandatory
+  ALLURE_RESULTS: "allure-results" #mandatory
+
+stages:
+  - build
+
+
+build:
+  stage: build
+  image: gradle:alpine
+  script:
+    #- export exit_code=0
+    - printenv
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - mkdir -p  src/test/resources/config && cp app.properties_template src/test/resources/config/app.properties
+    - gradle -v
+    - gradle clean
+    - gradle test -Dbrowser=${BROWSER} -DbrowserVersion=${BROWSER_VERSION} -DbrowserSize=${BROWSER_SIZE} -DbrowserMobileView=${BROWSER_MOBILE} -DremoteDriverUrl=https://moon.rendez-vous.ru/wd/hub/ -DvideoStorage=https://s3.rendez-vous.ru/moon/ -Dthreads=${THREADS} || true 
+    #$exit_code=$?
+    #- if [ ${exit_code} -ne 0 ]; then echo "It failed!" ; else echo "It worked!"; fi
+    - wget https://github.com/allure-framework/allurectl/releases/latest/download/allurectl_linux_386 -O ./allurectl && chmod +x ./allurectl
+    - ls -la
+    - ./allurectl job-run plan --output-file ${ALLURE_TESTPLAN_PATH} # where to save testplan.json
+    - ./allurectl watch -- gradle test -Dbrowser=${BROWSER} -DbrowserVersion=${BROWSER_VERSION} -DbrowserSize=${BROWSER_SIZE} -DbrowserMobileView=${BROWSER_MOBILE} -DremoteDriverUrl=https://moon.rendez-vous.ru/wd/hub/ -DvideoStorage=https://s3.rendez-vous.ru/moon/ -Dthreads=${THREADS} || true  #allurectl runs your tests and watches allure-result dir and uploads results in real time
+    - ls -la && ls -la allure-results && ls -la build && ls -la build/allure-results
+    - ./allurectl upload --endpoint $ALLURE_ENDPOINT --token $ALLURE_TOKEN --project-id $ALLURE_PROJECT_ID --launch-name "Local PC manual launch" build/allure-results
+  tags: 
+    - docker
+
+```
