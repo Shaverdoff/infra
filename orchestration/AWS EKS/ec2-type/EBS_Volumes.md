@@ -66,6 +66,7 @@ Dynamic Volume Provisioning allows storage volumes to be created on-demand.
 # ===========================================================
 # STORAGE CLASS
 # ===========================================================
+export disk_type=gp3
 cat << EoF > storageclass.yaml
 ---
 kind: StorageClass
@@ -78,7 +79,7 @@ metadata:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: ebs.csi.aws.com # Amazon EBS CSI driver
 parameters:
-  type: gp2
+  type: $disk_type
   fstype: xfs
   encrypted: 'true' # EBS volumes will always be encrypted by default
 # for prod set - Retain
