@@ -1,0 +1,11 @@
+# Create a repo
+aws ecr create-repository --repository-name usermanagement --region us-east-2
+# push helm chart to ECR
+```
+${bamboo.helm_registry_login}
+#aws ecr create-repository --repository-name usermanagement --region us-east-2
+helm package chart/ --version ${HELM_VERSION}
+helm push ${bamboo.project_name}-${HELM_VERSION}.tgz oci://${bamboo.aws_registry}
+helm package chart/ --version $HELM_LAST_VERSION
+helm push ${bamboo.project_name}-$HELM_LAST_VERSION.tgz oci://${bamboo.aws_registry}
+```
