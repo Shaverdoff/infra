@@ -1,0 +1,7 @@
+# Example
+```  
+export SERVICE_NAME=app app_url=app.company.com
+--set "ingress.hosts[0].host=$app_url" \
+--set "ingress.hosts[0].paths[0].path=/*,ingress.hosts[0].paths[0].pathType=ImplementationSpecific,ingress.hosts[0].paths[0].service.name=ssl-redirect,ingress.hosts[0].paths[0].service.port.name=use-annotation" \
+--set "ingress.hosts[0].paths[1].path=/*,ingress.hosts[0].paths[1].pathType=ImplementationSpecific,ingress.hosts[0].paths[1].service.name=$SERVICE_NAME,ingress.hosts[0].paths[1].service.port.name=http"
+```      
