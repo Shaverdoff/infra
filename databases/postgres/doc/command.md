@@ -16,6 +16,11 @@ SELECT pg_reload_conf();
 psql –l
 \l
 ```
+### наполнение таблиц
+```
+SELECT * FROM t_random2;
+create table t_random5 as select s, md5(random()::text) from generate_Series(1,500000) s;
+```
 ### Узнать версию БД
 ```
 select version();
