@@ -155,4 +155,99 @@ PostgreSQL: FAILED
 Помогло:
 sudo firewall-cmd --permanent --zone=trusted --add-source=172.29.74.45/32
 
+Бэкап БД
+#делаем полный бэкап БД
+barman backup opencity_reports
+Инкрементальный бэкап БД
+# на базе например изменилось что-то - выполняем инкрементальный бэкап (т.е. используем существующим бэкап и дополняем его изменившимися файлами)
+barman backup --reuse=link opencity_reports
+# Для показа списка бэкапов
+barman list-backup opencity_reports
+pgdb 20190130T111943 - Wed Jan 30 11:19:46 2019 - Size: 29.2 MiB - WAL Size: 0 B
+pgdb 20190130T111519 - Wed Jan 30 11:15:25 2019 - Size: 29.2 MiB - WAL Size: 58.0 KiB
+pgdb 20190130T111403 - Wed Jan 30 11:14:06 2019 - Size: 29.2 MiB - WAL Size: 89.2 KiB
+pgdb 20190130T110646 - Wed Jan 30 11:06:48 2019 - Size: 21.9 MiB - WAL Size: 108.2 KiB
+!!!!!!!!!CRON
+export EDITOR=nano
+или можно добавить в cron.d 
+nano /etc/cron.d/barman
+#запускать каждый день в час ночи бэкап БД-идентификатор
+  0 01   *   *   *   barman   [ -x /usr/bin/barman ] && /usr/bin/barman -q backup opencity_reports
+# удалить старые бэкапы
+  0 03   *   *   *   barman   [ -x /usr/bin/barman ] && /usr/bin/barman -q delete opencity_reports oldest
+STEP 7 - Восстановление
+#on barman-server
+# Восстановление из бэкапа на последнюю инкрементальную копию
+barman recover pgdb 20190130T111943 /tmp/data
+# RESTORE восстанавливается в папку /tmp/data, а при восстановлении пользователь должен предоставить последний идентификатор резервной копии
+barman recover pgdb latest /tmp/data
+#Now change owner of /tmp/data as 'postgres' and start the recovered instance.
+chown -R postgres:postgres data
+ls –lrth
+BARMAN-REPLICATION
+Postgres – находится в docker-контейнере на 1 сервере
+Barman – 2 сервер
+
+docker run  --name postgres3 \
+-e POSTGRES_PASSWORD=mysecretpassword \
+-p 5432:5432 \
+-d postgres:9.4
+docker exec -it postgres3 bash
+apt-get update && apt-get install nano -y
+cd /var/lib/postgresql/data
+# разрешаем подключаться без пароля от сервера с barman
+nano pg_hba.conf
+host    postgres        postgres 172.29.74.45/32 trust    # сервер бекапа
+host    replication postgres  172.29.74.45/32 trust  # сервер бекапа. Подключения для процесса репликации
+
+nano postgresql.conf
+max_wal_senders = 10  «number_of_replicas + 1»; учитываются в общем кол-ве соединений к серверу max_connections; так же, можно задать max_replication_slots
+max_replication_slots = 10
+wal_keep_segments = 1000; количество файлов WAL в директории pg_xlog/, которое будет храниться в папке с данными (по умолчанию, 16mb/файл);
+оно должно быть достаточным для того, чтобы обеспечить реплике успевание их стягивать при потоковой репликации;
+в противном случае, вы рискуете получить ситуацию, когда мастер удалит файлы журналов, которые ещё не были скопированы на реплику, и репликация сломается;
+если у вас активная запись в БД, и за время «лага репликации» вы успеваете выбрать это количество — вам стоит его увеличить.
+listen_addresses = '*'
+wal_level=archive  (или выше); необходимо для того, чтобы WAL-логи содержали информацию, необходимую для работы streaming replication
+docker restart postgres3
+# ON SERVER WITH BARMAN
+nano /etc/barman.conf
+[barman]
+barman_user = barman
+configuration_files_directory = /etc/barman.d
+barman_home = /var/lib/barman                                                                      ; каталог хранения бекапов
+log_file = /var/log/barman/barman.log
+log_level = INFO
+compression = gzip                                                                                 ; сжимаем полученные WAL
+
+nano /etc/barman.d/pgdb3.conf
+[pgdb3]
+description =  "pgdb3 (streaming)"
+conninfo = host=172.29.74.49 user=postgres dbname=postgres
+streaming_conninfo = host=172.29.74.49 user=postgres
+backup_method = postgres
+streaming_archiver = on 	                            ; включаем доставку логов через механизм репликации
+slot_name = barman 				; имя слота репликации
+archiver = off 					; выключаем доставку логов через archive_command
+path_prefix = "/usr/pgsql-9.6/bin"   	             ; путь по которому искать нужную версию pg_receivexlog 
+retention_policy = RECOVERY WINDOW OF 7 DAYS         ; храним количество копий, для отката на 7 дней
+minimum_redundancy = 3                                      ; минимальное количество бэкапов
+last_backup_maximum_age = 7 DAYS                  ; максимальный возраст бекапа
+
+#создание слота для бармана - на сервере бармана
+sudo barman receive-wal --create-slot pgdb1
+для проверки
+barman receive-wal --drop-slot pgdb3
+barman receive-wal --create-slot pgdb3
+barman receive-wal pgdb3
+или 2 способ на сервере - postgres
+psql
+SELECT pg_create_physical_replication_slot('barman');
+\q
+Exit
+
+#check
+barman check pgdb3
+psql -c 'SELECT version()' -U postgres -h 172.29.74.49 postgres
+
 ```
