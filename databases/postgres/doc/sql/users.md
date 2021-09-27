@@ -1,3 +1,18 @@
+# Пользователи
+### Перечень подключенных пользователей
+```
+SELECT datname,usename,client_addr,client_port FROM pg_stat_activity;
+```
+
+### Активность пользователя
+```
+SELECT datname FROM pg_stat_activity WHERE usename = 'devuser';
+```
+### Активность в бд
+```
+select * from pg_stat_activity;	
+```
+
 ### Создание пользователя
 ```
 CREATE USER tester321 WITH PASSWORD '321';
