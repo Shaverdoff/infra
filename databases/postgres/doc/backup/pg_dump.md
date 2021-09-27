@@ -144,9 +144,12 @@ ts_resource_plan - название бд
 ts_resource_plan.sql - дамп бд
 
 #restore 1 db
+```
 Для лучшего результата лучше удалить старую БД
 DROP DATABASE "ts_antoshina";
+```
 # if exist active connections  
+```
 SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'ts_antoshina' AND pid <> pg_backend_pid();
 CREATE DATABASE "ts_antoshina";
 #restore
@@ -158,7 +161,7 @@ psql -U postgres -d ts_antoshina -f ts_resource_plan.sql
 PG_DUMPALL
 su postgres
 pg_dumpall -c -U postgres | gzip > dump_`date +%d-%m-%Y"_"%H_%M_%S`.gz
-
+```
 # RESTORE
 ````
 CREATE DATABASE monitor;
