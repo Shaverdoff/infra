@@ -1,4 +1,5 @@
-BACKUP/RESTORE
+# BACKUP/RESTORE
+```
 su - postgres -c "pg_basebackup --host=192.168.1.20 --username=replicate --pgdata=/data --wal-method=stream"
 su - postgres -c "pg_basebackup -h 172.27.30.51 -U replica -D /var/lib/pgsql/data -P --xlog"
 su postgres -c "pg_basebackup -h 192.168.0.200 -D /var/lib/postgresql/9.6/main -P -U replication --xlog-method=stream"
@@ -130,3 +131,4 @@ SELECT * FROM pg_subscription;
 
 Проверка на мастере
 select * from pg_replication_slots;
+```
