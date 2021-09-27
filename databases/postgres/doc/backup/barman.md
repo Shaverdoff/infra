@@ -250,4 +250,19 @@ Exit
 barman check pgdb3
 psql -c 'SELECT version()' -U postgres -h 172.29.74.49 postgres
 
+Ошибки:
+WAL archive: FAILED (please make sure WAL shipping is setup)
+su barman
+sudo barman switch-wal --force --archive pgdb3
+
+Asking PostgreSQL server to finalize the backup
+WAL ARCHIVE не работает
+проверьте archive_command в postresql.conf
+Бэкап
+barman backup pgdb3
+barman list-backup pgdb3 – лист бэкапов
+barman replication-status pgdb3 - Check the streaming status using barman
+задание в кроне
+  0 01   *   *   *   barman   [ -x /usr/bin/barman ] && /usr/bin/barman -q backup dev_opencity
+
 ```
