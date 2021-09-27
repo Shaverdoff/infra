@@ -103,9 +103,10 @@ CREATE DATABASE edc
     LC_COLLATE = 'ru_RU.UTF-8'
     LC_CTYPE = 'ru_RU.UTF-8'
     CONNECTION LIMIT = -1;
+```
 
-
-RESTORE
+# RESTORE
+```
 pg_restore -d edc edc_2810.dump
 
 #отслеживать можно изменением размера дб
@@ -131,4 +132,62 @@ SELECT * FROM pg_subscription;
 
 Проверка на мастере
 select * from pg_replication_slots;
+```
+
+PG_DUMP
+сделать копию одной бд постгрес - pg_dump – bd 9.4
+#backup 1 db
+su postgres
+pg_dump -U postgres ts_resource_plan > ts_resource_plan.sql
+postgres - владелец бд
+ts_resource_plan - название бд
+ts_resource_plan.sql - дамп бд
+
+#restore 1 db
+Для лучшего результата лучше удалить старую БД
+DROP DATABASE "ts_antoshina";
+# if exist active connections  
+SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'ts_antoshina' AND pid <> pg_backend_pid();
+CREATE DATABASE "ts_antoshina";
+#restore
+su postgres
+psql -U postgres -d ts_antoshina -f ts_resource_plan.sql
+-U postgres - owner db
+-d ts_antoshina - имя_бд
+-f ts_resource_plan.sql - дамп бд
+PG_DUMPALL
+su postgres
+pg_dumpall -c -U postgres | gzip > dump_`date +%d-%m-%Y"_"%H_%M_%S`.gz
+
+#RESTORE
+CREATE DATABASE monitor;
+gunzip -c dump_20-05-2019_10_10_25.gz | psql -U monitor -d monitor
+PG_DUMPALL in DOCKER
+#!/bin/sh
+# Dump DBs
+
+#now=$(date +"%d-%m-%Y_%H-%M")
+docker exec -t opencity_db_primary.1.tu288umrzgazjhndy3sf9mw7s pg_dumpall -c -U postgres | gzip > dump_`date +%d-%m-%Y"_"%H_%M_%S`.gz
+
+# remove all files (type f) modified longer than 30 days ago under /db_backups/backups
+find /db_backups/backups -name "*.gz" -type f -mtime +30 -delete
+
+exit 0
+
+crontab -e
+i
+ctrl+v
+ctrl+c
+каждую субботу бэкап в 22-00
+0 1 * * * /opt/backup_script/backup.sh >> /opt/backup/backup.log
+RESTORE
+cat your_dump.sql | docker exec -i your-db-container psql -U postgres
+PG_RESTORE
+Использования скрина для создания новой сессии и выполнения в ней задач
+screen pg_restore --create -j 8 -h localhost -Fc -p 5432 -U postgres  -d postgres edc_dwh_2011.dump
+-Fc - восстановление из архивного дампа (в котором было -Fc)
+-j 8 - восстановление в 8 потоков (8 ядер)
+--create - создает БД из дампа
+--clean
+-d postgres - используется для подключения к БД и создания удаление нужной бд, не будет в нее заливаться
 ```
