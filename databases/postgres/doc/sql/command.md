@@ -1,5 +1,3 @@
-
-
 # Системные команды
 ### Подключение к бд
 ```
@@ -55,15 +53,11 @@ select name, setting, sourcefile, sourceline from pg_settings where name = 'wal_
 ```
 sed -n "/^$(date --date="120 minutes ago" "+%Y-%m-%d %H:%M")/,\$p" postgresql-Thu.log >> 120min	
 ```
-	
-
-# БАЗЫ ДАННЫХ
 ### Размер базы данных
 ```
 SELECT pg_size_pretty(pg_database_size('namedb' ));
 ```
-
-# Создание базы данных
+### Создание базы данных
 ```
 CREATE DATABASE teamcity;	
 ```
