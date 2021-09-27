@@ -1,3 +1,5 @@
+
+
 # Системные команды
 ### Подключение к бд
 ```
@@ -59,20 +61,7 @@ select name, setting, sourcefile, sourceline from pg_settings where name = 'wal_
 sed -n "/^$(date --date="120 minutes ago" "+%Y-%m-%d %H:%M")/,\$p" postgresql-Thu.log >> 120min	
 ```
 	
-# Пользователи
-### Перечень подключенных пользователей
-```
-SELECT datname,usename,client_addr,client_port FROM pg_stat_activity;
-```
 
-### Активность пользователя
-```
-SELECT datname FROM pg_stat_activity WHERE usename = 'devuser';
-```
-### Активность в бд
-```
-select * from pg_stat_activity;	
-```
 # БАЗЫ ДАННЫХ
 ### Размер базы данных
 ```
