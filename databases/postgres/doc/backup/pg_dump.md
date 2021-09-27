@@ -159,13 +159,15 @@ PG_DUMPALL
 su postgres
 pg_dumpall -c -U postgres | gzip > dump_`date +%d-%m-%Y"_"%H_%M_%S`.gz
 
-#RESTORE
+# RESTORE
+````
 CREATE DATABASE monitor;
 gunzip -c dump_20-05-2019_10_10_25.gz | psql -U monitor -d monitor
 PG_DUMPALL in DOCKER
 #!/bin/sh
+```
 # Dump DBs
-
+```
 #now=$(date +"%d-%m-%Y_%H-%M")
 docker exec -t opencity_db_primary.1.tu288umrzgazjhndy3sf9mw7s pg_dumpall -c -U postgres | gzip > dump_`date +%d-%m-%Y"_"%H_%M_%S`.gz
 
