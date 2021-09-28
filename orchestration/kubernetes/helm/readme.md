@@ -7,8 +7,6 @@ helm install dsatest dsatest/
 # helm upgrade
 helm upgrade dsatest dsatest --debug
 
-
-
 # helm uninstall
 helm uninstall dsatest -n dsa
 #### Create first app
@@ -54,5 +52,26 @@ helm  package dsatest/
               value: {{ $value | quote }}
             {{- end }}
 ```
+# DEPENDENCIES (переопределение переменных)
+```
+например у вас есть зависимость
+в этом чарте свой values.yaml
+в основном values.yaml
+переопределяете значения:
+## Configuration for prometheus-node-exporter subchart
+##
+prometheus-node-exporter:
+  namespaceOverride: ""
+  tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: "node-role/clickhouse"
+    operator: "Exists"
+    effect: "NoSchedule"
+  - key: "node-role/rvsite"
+    operator: "Exists"
+    effect: "NoSchedule"
 
+И эти значения уйдут в зависимый чарт
+```
 

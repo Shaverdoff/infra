@@ -1,7 +1,0 @@
-Timezone in docker
-# TIMEZONE
-echo Europe/Samara > /etc/timezone
-or in docker
--e TZ=Europe/Samara
--v /etc/timezone:/etc/timezone
--v /etc/localtime:/etc/localtime:ro

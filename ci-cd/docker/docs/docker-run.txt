@@ -16,3 +16,18 @@ docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 8) --tty, -t - назначает псевдо-TTY, подключенный к STDIN контейнера. Зачастую используется с опцией --interactive, -i - например, если вам нужно подключиться к оболочке (bash) внутри docker-контейнера для выполнения каких-то действий.
 9) --volume, -v - монтирование тома. 
 10) --workdir, -w - устанавливает рабочую директорию внутри docker-контейнера. Например, если вы скопировали некие файлы в папку app контейнера, то вполне разумно будет установить этот каталог в качестве рабочей директории.
+
+# EXAMPLES
+### change entrypoint
+docker run -it --entrypoint "" alpine/helm:3.5.4 sh
+
+# Добавить запись в /etc/hosts в контейнер
+docker run --rm --add-host=test.example.com:10.0.0.1 appropriate/curl cat /etc/hosts
+
+# ENVs & Volumes
+# Timezone in docker
+echo Europe/Samara > /etc/timezone
+or in docker
+-e TZ=Europe/Samara
+-v /etc/timezone:/etc/timezone
+-v /etc/localtime:/etc/localtime:ro

@@ -1,4 +1,0 @@
-ADD-HOST
-Добавить запись в /etc/hosts в контейнер
-docker run --rm --add-host=test.example.com:10.0.0.1 appropriate/curl cat /etc/hosts
-
