@@ -12,7 +12,14 @@ tolerations:
 - effect: NoExecute
   key: node-role/frontend
   
-  
+# TOLERATION FOR ALL NODES, ignore all NoSchedule
+  tolerations:
+    - operator: Exists
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - operator: Exists
+      effect: NoExecute
   
 # ADD TAINT ON NODE1
 kubectl taint nodes node1 key1=value1:NoSchedule
