@@ -1,0 +1,6 @@
+неверная запись первичной контрольной точки
+# bad solution
+```
+su postgres
+/usr/pgsql-9.6/bin/pg_resetxlog -f /var/lib/pgsql/9.6/data
+```
