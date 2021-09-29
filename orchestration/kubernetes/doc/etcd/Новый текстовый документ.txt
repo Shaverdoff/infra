@@ -1,2 +1,0 @@
-# config
-cat /etc/kubernetes/manifests/etcd.yaml
