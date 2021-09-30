@@ -1,0 +1,7 @@
+```
+# генерация робота на лету
+location /robots.txt {
+add_header Content-Type text/plain;
+return 200 "User-agent: *\nDisallow: /\n";
+}
+```
