@@ -3,7 +3,7 @@
 #/opt/instana/agent/etc/instana/configuration.yaml
 # Увеличим количество CPU потоков, которые агент может использовать для обработки данных. Это должно помочь PHP сенсору быстрее обрабатывать трейсы и тем самым снизится нагрузка
 executorThreads: 32
-
+executorQueueLimit: 2000
 cat /usr/local/etc/php/conf.d/zzz-instana.ini
 [instana]
 extension=/usr/local/lib/php/extensions/no-debug-non-zts-20190902/instana.so
