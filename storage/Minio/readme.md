@@ -21,7 +21,7 @@ cat > /etc/hosts << EOF
 EOF
 ```
 
-# Installation
+### Installation
 ```
 # https://min.io/download#/linux
 
