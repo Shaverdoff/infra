@@ -4,9 +4,9 @@
 weed benchmark -master=localhost:9333 -c=10 -n=100000 -replication=001 -size=1048576
 # delete
 curl "http://localhost:9333/col/delete?collection=benchmark&pretty=y"
-
 ```
 #### WRITE
+```
 Concurrency Level:      10
 Time taken for tests:   214.393 seconds
 Complete requests:      1000000
@@ -50,7 +50,6 @@ Percentage of the requests served within a certain time (ms)
    98%      1.2 ms
    99%      1.6 ms
   100%     22.6 ms
-
 ```
 ```
 # SCHEMA
