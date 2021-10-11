@@ -31,6 +31,7 @@ Percentage of the requests served within a certain time (ms)
   100%     55.9 ms
 ```
 ##### READ
+```
 Concurrency Level:      10
 Time taken for tests:   60.251 seconds
 Complete requests:      1000000
@@ -51,7 +52,6 @@ Percentage of the requests served within a certain time (ms)
    98%      1.2 ms
    99%      1.6 ms
   100%     22.6 ms
-```
 ```
 # SCHEMA
 ```
