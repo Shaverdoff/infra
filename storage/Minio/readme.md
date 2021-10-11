@@ -1,7 +1,7 @@
 # Minio
 ### PREREQ
 ```
-# ON DNS
+1) DNS
 create 4 DNS records with type A
 10.3.3.191    minio1.company.ru 
 10.3.3.195    minio2.company.ru
@@ -11,6 +11,7 @@ create 4 DNS records with type A
 CNAME ms3.company.ru - minio1.company.ru
 !!!рекомендовано создавать диски одного размера!!!
 
+2) /etc/hosts
 # ON ALL NODES
 cat > /etc/hosts << EOF
 10.3.3.191    minio1.company.ru 
@@ -20,18 +21,42 @@ cat > /etc/hosts << EOF
 127.0.0.1     localhost
 EOF
 
-# Create user
+3) Create user
 useradd minio
+
+
+4) SSL
+copy certs to /etc/ssl
+add this to MINIO_OPTS
+ --certs-dir /etc/ssl
+# Inside the certs directory, the private-key must by named as private.key and public-key must be named public.crt.
+
+5) create data dir for MINIO
+mkdir /data
+chown -R minio /data
+
+6) ENV file for minio
+cat > /etc/default/minio << EOF
+MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
+MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
+MINIO_ROOT_USER="miniorv"
+MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
+EOF
+where:
+# for 1 disk use
+### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
+# for 2 disks use
+### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...2}"
+PS: минимум 2 ноды и по 1 диску, всегда должно быть эквивалентно 4!!!, но не больше 16 нод
+#minio server http://host{1...n}/export{1...m}
+#host{1...n} - hostname - minio1:9000
+#export{1...m} - data folder - /data
 ```
 
 ### Installation
 ```
 # https://min.io/download#/linux
 dnf install https://dl.min.io/server/minio/release/linux-amd64/minio-20211010165330.0.0.x86_64.rpm
-
-# create data dir for MINIO
-mkdir /data
-chown -R minio /data
 
 # systemd
 cat > /etc/systemd/system/minio.service << EOF
@@ -63,32 +88,6 @@ SendSIGKILL=no
 WantedBy=multi-user.target
 EOF
 ```
-### SSL
-```
-copy certs to /etc/ssl
-add this to MINIO_OPTS
- --certs-dir /etc/ssl
-# Inside the certs directory, the private-key must by named as private.key and public-key must be named public.crt.
-systemctl restart minio.service
-systemctl status minio.service
-```
-#### минимум 2 ноды и по 1 диску, всегда должно быть эквивалентно 4!!!, но не больше 16 нод
-```
-# for 1 disk use
-### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
-# for 2 disks use
-### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...2}"
-
-cat > /etc/default/minio << EOF
-MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
-MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
-MINIO_ROOT_USER="miniorv"
-MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
-EOF
-where:
-#minio server http://host{1...n}/export{1...m}
-#host{1...n} - hostname - minio1:9000
-#export{1...m} - data folder - /data
 
 systemctl daemon-reload
 systemctl enable minio
