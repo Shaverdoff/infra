@@ -71,7 +71,7 @@ EOF
 #### минимум 2 ноды и по 1 диску, всегда должно быть эквивалентно 4!!!, но не больше 16 нод
 ```
 cat > /etc/default/minio << EOF
-MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --address :9000"
+MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
 MINIO_VOLUMES="https://minio{1...2}.rendez-vous.ru/data/data{1...2}"
 MINIO_ROOT_USER="miniorv"
 MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
