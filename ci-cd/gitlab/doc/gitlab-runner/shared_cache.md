@@ -11,4 +11,9 @@ nano /etc/gitlab-runner/config.toml
       BucketName = "git-runners-cache"
       BucketLocation = "eu-west-1"
       Insecure = false
+ 
+# create bucket on s3 with name:
+git-runners-cache
+# restart runner
+systemctl restart gitlab-runner
 ```
