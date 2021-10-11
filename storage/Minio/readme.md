@@ -18,10 +18,11 @@ EOF
 ```
 # Installation
 ```
-wget -O /usr/bin/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
-chmod +x /usr/bin/minio
-wget -O /usr/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
-chmod +x /usr/bin/mc
+#wget -O /usr/bin/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
+#chmod +x /usr/bin/minio
+#wget -O /usr/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
+#chmod +x /usr/bin/mc
+dnf install https://dl.min.io/server/minio/release/linux-amd64/minio-20211010165330.0.0.x86_64.rpm
 
 # create data dir for MINIO
 mkdir /data
