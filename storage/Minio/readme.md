@@ -1,7 +1,8 @@
 # Minio
 ### PREREQ
 ```
-!!!рекомендовано создавать диски одного размера!!!
+!!! размер стореджа по самому маленькому диску!!!
+!!! рекомендовано создавать диски одного размера!!!
 1) DNS
 a)
 create 4 DNS records with type A
@@ -158,31 +159,32 @@ systemctl status minio.service
 ### Minio WebUI
 https://ms3.company.ru:9001/dashboard
 
-### ALIAS
+###################
+### CLIENT
+###################
 ```
-mc alias set <ALIAS> <YOUR-S3-ENDPOINT> [YOUR-ACCESS-KEY] [YOUR-SECRET-KEY] [--api API-SIGNATURE]
-mc alias set s3 https://minio1.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
-minio-mc alias set s3 https://minio1.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
-# check - list bucket minio
-mc ls s3
-
-############### BUCKET
-# alias
-# list aliases
-minio-mc alias ls
-# remove alias minio
-minio-mc rm minio
+# INSTALL
+dnf install https://dl.min.io/client/mc/release/linux-amd64/mcli-20211007041958.0.0.x86_64.rpm
+#########
+# ALIAS
+#########
 # create alias
-minio-mc alias set s3 https://minio1.company.ru:9000 miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH
-
+mcli alias set <ALIAS> <YOUR-S3-ENDPOINT> <YOUR-ACCESS-KEY> <YOUR-SECRET-KEY> --api <API-SIGNATURE> --path <BUCKET-LOOKUP-TYPE>
+mcli alias set s3 https://ms3.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
+# list aliases
+mcli alias ls
+mcli alias ls s3
+# remove alias minio
+mcli rm minio
 
 #Создаем подключение к Minio под названием s3.
-minio-mc config host add s3 https://minio1.company.ru:9000 miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH
+mcli config host add s3 https://minio1.company.ru:9000 miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH
 
-######################
-POLICY
+#########
+# POLICY
+#########
 # list all policy
-minio-mc admin policy list s3
+mcli admin policy list s3
 
 consoleAdmin        
 diagnostics         
@@ -190,66 +192,66 @@ readonly
 readwrite           
 writeonly
 
-
-
-#### BUCKET
+#########
+# BUCKET
+#########
 # list of buckets
-minio-mc ls
+mcli ls
 # tree
-minio-mc tree s3
+mcli tree s3
 # size
-minio-mc du s3
+mcli du s3
 ##Создаем bucket.
-minio-mc mb s3/onec
-minio-mc mb s3/clickhouse-backup
+mcli mb s3/onec
+mcli mb s3/clickhouse-backup
 
 ######## User
-#список пользователей
-mc admin user list TARGET
-mc admin user list s3
-mc admin user list --json s3
+# список пользователей
+mcli admin user list TARGET
+mcli admin user list s3
+mcli admin user list --json s3
 # создать юзера
-mc admin user add TARGET USERNAME PASSWORD
+mcli admin user add TARGET USERNAME PASSWORD
 # onec user
-mc admin user add s3 yTzw7dbcgpXC9tPGPJmcr 5NYrz7fSZjnV4UCwcVeYv5ds2HsWufAjhAUYzmA
+mcli admin user add s3 yTzw7dbcgpXC9tPGPJmcr 5NYrz7fSZjnV4UCwcVeYv5ds2HsWufAjhAUYzmA
 # удалить юзера from target s3
-mc admin user remove s3 CFTC8ZKWDJCVJID2IJZ0
+mcli admin user remove s3 CFTC8ZKWDJCVJID2IJZ0
 # policy for user
-mc admin policy set s3 writeonly user=yTzw7dbcgpXC9tPGPJmcr
+mcli admin policy set s3 writeonly user=yTzw7dbcgpXC9tPGPJmcr
 # info 
-mc admin user info s3 CFTC8ZKWDJCVJID2IJZ0
+mcli admin user info s3 CFTC8ZKWDJCVJID2IJZ0
 
 #### GROUP
 #добавить группу
-mc admin group add TARGET GROUPNAME MEMBERS
+mcli admin group add TARGET GROUPNAME MEMBERS
 # create group onec and add user
-mc admin group add s3 onec yTzw7dbcgpXC9tPGPJmcr
+mcli admin group add s3 onec yTzw7dbcgpXC9tPGPJmcr
 # info about group
-mc admin group info s3 onec
+mcli admin group info s3 onec
 # list of groups
-mc admin group list s3
+mcli admin group list s3
 # #назначить политику для группы (writeonly, readonly или readwrite)
-mc admin policy set s3 writeonly group=onec
+mcli admin policy set s3 writeonly group=onec
 # list all users in group
-mc admin user list s3
+mcli admin user list s3
 
 # перезагрузка кластера
-mc admin service restart minio 
+mcli admin service restart minio 
 
 # SYSTEM INFO
-minio-mc admin config get s3 region
-minio-mc stat s3
+mcli admin config get s3 region
+mcli stat s3
 
 # CLICKHOUSE
 # bucket
-minio-mc mb s3/clickhouse-backup
+mcli mb s3/clickhouse-backup
 # user clickhouse
-minio-mc admin user add s3 clickhouse iHZ1Fh76nUtxcNNTWumqNrF5tucqp82GKBIcGwol
-minio-mc admin policy set s3 writeonly user=clickhouse
+mcli admin user add s3 clickhouse iHZ1Fh76nUtxcNNTWumqNrF5tucqp82GKBIcGwol
+mcli admin policy set s3 writeonly user=clickhouse
 # group
-minio-mc admin group add s3 clickhouse clickhouse
-minio-mc admin policy set s3 writeonly group=clickhouse
-minio-mc admin group info s3 clickhouse
+mcli admin group add s3 clickhouse clickhouse
+mcli admin policy set s3 writeonly group=clickhouse
+mcli admin group info s3 clickhouse
 
 # policy
 nano {
@@ -329,11 +331,11 @@ radosgw-admin user create --uid=test1 --display-name="Test1" --email=test1@test.
 "secret_key": "5NYrz7fSZjnV4UCwcVeYv5ds2HsWufAjhAUYzmA"
 web
 
+```
 
 
-
-# minio
-размер стореджа по самому маленькому диску!!!
+# docker
+```
 
 docker run -d -p 9001:9000 -e "MINIO_ACCESS_KEY=KM9IL4OSS15P0H2TMWPP" -e "MINIO_SECRET_KEY=RQQny9tMVNg0uv1AbVSmykkINhe86UpEgRq+TWLV" -v /data/minio-data:/data -d minio/minio server /data
 
