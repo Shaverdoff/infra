@@ -60,10 +60,26 @@ PS: минимум 2 ноды и по 1 диску, всегда должно б
 7) on servers minio1 and minio2 install nginx
 yum install nginx -y
 nano /etc/nginx/conf.d/minio.conf
-server {
- listen 80;
- server_name ms3.company.ru;
+upstream minio_servers {
+    server minio1.company.ru:9000;
+    server minio2.company.ru:9000;
+    server minio3.company.ru:9000;
+    server minio4.company.ru:9000;
+}
 
+server {
+    listen 80;
+    server_name ms3.rendez-vous.ru;
+    return 301 https://ms3.company.ru$request_uri;
+}
+
+server {
+ listen 443 ssl;
+ server_name ms3.rendez-vous.ru;
+ ssl_certificate     /etc/ssl/rv-ssl/public.crt;
+ ssl_certificate_key /etc/ssl/rv-ssl/private.key;
+ ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+ ssl_ciphers         HIGH:!aNULL:!MD5;
  # To allow special characters in headers
  ignore_invalid_headers off;
  # Allow any size file to be uploaded.
@@ -83,12 +99,12 @@ server {
    proxy_http_version 1.1;
    proxy_set_header Connection "";
    chunked_transfer_encoding off;
-
-   proxy_pass http://localhost:9000; # If you are using docker-compose this would be the hostname i.e. minio
+   proxy_pass       https://minio_servers;
    # Health Check endpoint might go here. See https://www.nginx.com/resources/wiki/modules/healthcheck/
    # /minio/health/live;
  }
 }
+
 
 systemctl start nginx
 systemctl enable nginx
