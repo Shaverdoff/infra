@@ -1,4 +1,6 @@
 # Minio
+PREREQ
+```
 # ON DNS
 ```
 create 4 DNS records with type A
@@ -21,9 +23,12 @@ cat > /etc/hosts << EOF
 127.0.0.1     localhost
 EOF
 ```
+
 # Installation
 ```
 # https://min.io/download#/linux
+
+useradd minio
 
 #wget -O /usr/bin/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
 #chmod +x /usr/bin/minio
@@ -37,42 +42,62 @@ mkdir /data
 # systemd
 cat > /etc/systemd/system/minio.service << EOF
 [Unit]
-Description=minio
+Description=MinIO
 Documentation=https://docs.min.io
 Wants=network-online.target
 After=network-online.target
-AssertFileIsExecutable=/usr/bin/minio
+AssertFileIsExecutable=/usr/local/bin/minio
 
 [Service]
-WorkingDirectory=/data
-User=root
-Group=root
+WorkingDirectory=/usr/local/
+
+User=minio
+Group=minio
+ProtectProc=invisible
+
 EnvironmentFile=/etc/default/minio
-#ExecStartPre=/bin/bash -c "[ -z "${MINIO_VOLUMES}" ] && echo "Variable MINIO_VOLUMES not set in /etc/default/minio""
-#ExecStartPre=/bin/bash -c "[ -z "${MINIO_ACCESS_KEY}" ] && echo "Variable MINIO_VOLUMES not set in /etc/default/minio""
-#ExecStartPre=/bin/bash -c "[ -z "${MINIO_SECRET_KEY}" ] && echo "Variable MINIO_VOLUMES not set in /etc/default/minio""
-ExecStart=/usr/bin/minio server $MINIO_OPTS $MINIO_VOLUMES
-Restart=on-success
-StandardOutput=journal
-StandardError=inherit
+ExecStartPre=/bin/bash -c "if [ -z \"${MINIO_VOLUMES}\" ]; then echo \"Variable MINIO_VOLUMES not set in /etc/default/minio\"; exit 1; fi"
+
+ExecStart=/usr/local/bin/minio server $MINIO_OPTS $MINIO_VOLUMES
+
+# Let systemd restart this service always
+Restart=always
+
+# Specifies the maximum file descriptor number that can be opened by this process
 LimitNOFILE=65536
+
+# Specifies the maximum number of threads this process can create
+TasksMax=infinity
+
 # Disable timeout logic and wait until process is stopped
 TimeoutStopSec=infinity
 SendSIGKILL=no
-KillSignal=SIGTERM
-SuccessExitStatus=0
 
 [Install]
 WantedBy=multi-user.target
+
+# Built for ${project.name}-${project.version} (${project.name})
 EOF
 ```
-
-# README
+### SSL
+```
+copy certs to /etc/ssl
+add this to MINIO_OPTS
+ --certs-dir /etc/ssl
+# Inside the certs directory, the private-key must by named as private.key and public-key must be named public.crt.
+systemctl restart minio.service
+systemctl status minio.service
+```
 #### минимум 2 ноды и по 1 диску, всегда должно быть эквивалентно 4!!!, но не больше 16 нод
 ```
+# for 1 disk use
+### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
+# for 2 disks use
+### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...2}"
+
 cat > /etc/default/minio << EOF
 MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
-MINIO_VOLUMES="https://minio{1...2}.rendez-vous.ru/data/data{1...2}"
+MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
 MINIO_ROOT_USER="miniorv"
 MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
 EOF
@@ -92,15 +117,7 @@ systemctl status minio.service
 # Minio WebUI
 http://10.3.3.191:9000
 
-# SSL
-```
-copy certs to /etc/ssl
-add this to MINIO_OPTS
- --certs-dir /etc/ssl
-# Inside the certs directory, the private-key must by named as private.key and public-key must be named public.crt.
-systemctl restart minio.service
-systemctl status minio.service
-```
+
 ## ALIAS
 mc alias set <ALIAS> <YOUR-S3-ENDPOINT> [YOUR-ACCESS-KEY] [YOUR-SECRET-KEY] [--api API-SIGNATURE]
 mc alias set s3 https://minio1.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
