@@ -19,22 +19,19 @@ cat > /etc/hosts << EOF
 10.3.3.245    minio4.company.ru
 127.0.0.1     localhost
 EOF
+
+# Create user
+useradd minio
 ```
 
 ### Installation
 ```
 # https://min.io/download#/linux
-
-useradd minio
-
-#wget -O /usr/bin/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
-#chmod +x /usr/bin/minio
-#wget -O /usr/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
-#chmod +x /usr/bin/mc
 dnf install https://dl.min.io/server/minio/release/linux-amd64/minio-20211010165330.0.0.x86_64.rpm
 
 # create data dir for MINIO
 mkdir /data
+chown -R minio /data
 
 # systemd
 cat > /etc/systemd/system/minio.service << EOF
@@ -47,33 +44,23 @@ AssertFileIsExecutable=/usr/local/bin/minio
 
 [Service]
 WorkingDirectory=/usr/local/
-
 User=minio
 Group=minio
 ProtectProc=invisible
-
 EnvironmentFile=/etc/default/minio
 ExecStartPre=/bin/bash -c "if [ -z \"${MINIO_VOLUMES}\" ]; then echo \"Variable MINIO_VOLUMES not set in /etc/default/minio\"; exit 1; fi"
-
 ExecStart=/usr/local/bin/minio server $MINIO_OPTS $MINIO_VOLUMES
-
-# Let systemd restart this service always
 Restart=always
-
 # Specifies the maximum file descriptor number that can be opened by this process
 LimitNOFILE=65536
-
 # Specifies the maximum number of threads this process can create
 TasksMax=infinity
-
 # Disable timeout logic and wait until process is stopped
 TimeoutStopSec=infinity
 SendSIGKILL=no
 
 [Install]
 WantedBy=multi-user.target
-
-# Built for ${project.name}-${project.version} (${project.name})
 EOF
 ```
 ### SSL
