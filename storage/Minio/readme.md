@@ -1,11 +1,13 @@
 # Minio
 # ON DNS
+```
 create 3 records
 A minio1 ip
 A minio2 ip
 CNAME ms3.company.ru - minio1.company.ru
 
 !!!рекомендовано создавать диски одного размера!!!
+```
 # ON ALL NODES
 ```
 cat > /etc/hosts << EOF
