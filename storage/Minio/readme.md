@@ -1,9 +1,12 @@
 # Minio
 # ON DNS
 ```
-create 3 records
-A minio1 ip
-A minio2 ip
+create 4 DNS records with type A
+10.3.3.191    minio1.company.ru 
+10.3.3.195    minio2.company.ru
+10.3.3.242    minio3.company.ru
+10.3.3.245    minio4.company.ru
+
 CNAME ms3.company.ru - minio1.company.ru
 
 !!!рекомендовано создавать диски одного размера!!!
