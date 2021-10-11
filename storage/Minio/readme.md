@@ -111,18 +111,17 @@ systemctl status minio.service
 systemctl restart minio.service
 systemctl status minio.service
 ```
-# Minio WebUI
+### Minio WebUI
 http://10.3.3.191:9000
 
 
-## ALIAS
+### ALIAS
+```
 mc alias set <ALIAS> <YOUR-S3-ENDPOINT> [YOUR-ACCESS-KEY] [YOUR-SECRET-KEY] [--api API-SIGNATURE]
 mc alias set s3 https://minio1.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
 minio-mc alias set s3 https://minio1.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
 # check - list bucket minio
 mc ls s3
-
-
 
 ############### BUCKET
 # alias
@@ -297,5 +296,5 @@ docker run -d -p 9001:9000 -e "MINIO_ACCESS_KEY=KM9IL4OSS15P0H2TMWPP" -e "MINIO_
 
 https://github.com/minio/minio
 
-
+```
 
