@@ -1,8 +1,7 @@
 # Minio
-PREREQ
+### PREREQ
 ```
 # ON DNS
-```
 create 4 DNS records with type A
 10.3.3.191    minio1.company.ru 
 10.3.3.195    minio2.company.ru
