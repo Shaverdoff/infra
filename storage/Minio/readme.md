@@ -11,15 +11,17 @@ CNAME ms3.company.ru - minio1.company.ru
 # ON ALL NODES
 ```
 cat > /etc/hosts << EOF
-10.3.3.1    minio1.company.ru 
-10.3.3.2    minio2.company.ru
-10.3.3.3    minio3.company.ru
-10.3.3.4    minio4.company.ru
+10.3.3.191    minio1.company.ru 
+10.3.3.195    minio2.company.ru
+10.3.3.242    minio3.company.ru
+10.3.3.245    minio4.company.ru
 127.0.0.1     localhost
 EOF
 ```
 # Installation
 ```
+# https://min.io/download#/linux
+
 #wget -O /usr/bin/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
 #chmod +x /usr/bin/minio
 #wget -O /usr/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
@@ -85,14 +87,14 @@ systemctl restart minio.service
 systemctl status minio.service
 ```
 # Minio WebUI
-http://10.3.3.1:9000
+http://10.3.3.191:9000
 
 # SSL
 ```
-copy cert to /etc/ssl
+copy certs to /etc/ssl
 add this to MINIO_OPTS
  --certs-dir /etc/ssl
-# Inside the certs directory, the private key must by named private.key and the public key must be named public.crt.
+# Inside the certs directory, the private-key must by named as private.key and public-key must be named public.crt.
 systemctl restart minio.service
 systemctl status minio.service
 ```
