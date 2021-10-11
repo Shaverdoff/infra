@@ -29,6 +29,7 @@ Percentage of the requests served within a certain time (ms)
    98%      7.1 ms
    99%      9.5 ms
   100%     55.9 ms
+```
 ##### READ
 Concurrency Level:      10
 Time taken for tests:   60.251 seconds
