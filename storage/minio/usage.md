@@ -1,6 +1,5 @@
-#########
-# ALIAS
-#########
+### ALIAS
+```
 # create alias
 mcli alias set <ALIAS> <YOUR-S3-ENDPOINT> <YOUR-ACCESS-KEY> <YOUR-SECRET-KEY> --api <API-SIGNATURE> --path <BUCKET-LOOKUP-TYPE>
 mcli alias set s3 https://ms3.company.ru miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH --api S3v4
@@ -12,10 +11,9 @@ mcli rm minio
 
 #Создаем подключение к Minio под названием s3.
 mcli config host add s3 https://minio1.company.ru:9000 miniorv SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH
-
-#########
-# POLICY
-#########
+```
+### POLICY
+```
 # list all policy
 mcli admin policy list s3
 
@@ -24,10 +22,9 @@ diagnostics
 readonly            
 readwrite           
 writeonly
-
-#########
-# BUCKET
-#########
+```
+### BUCKET
+```
 # list of buckets
 mcli ls
 # tree
@@ -37,8 +34,9 @@ mcli du s3
 ##Создаем bucket.
 mcli mb s3/onec
 mcli mb s3/clickhouse-backup
-
-######## User
+```
+### User
+```
 # список пользователей
 mcli admin user list TARGET
 mcli admin user list s3
@@ -53,8 +51,9 @@ mcli admin user remove s3 CFTC8ZKWDJCVJID2IJZ0
 mcli admin policy set s3 writeonly user=yTzw7dbcgpXC9tPGPJmcr
 # info 
 mcli admin user info s3 CFTC8ZKWDJCVJID2IJZ0
-
-#### GROUP
+```
+### GROUP
+```
 #добавить группу
 mcli admin group add TARGET GROUPNAME MEMBERS
 # create group onec and add user
@@ -67,11 +66,12 @@ mcli admin group list s3
 mcli admin policy set s3 writeonly group=onec
 # list all users in group
 mcli admin user list s3
+```
 
+### SYSTEM INFO
+```
 # перезагрузка кластера
 mcli admin service restart minio 
-
-# SYSTEM INFO
 mcli admin config get s3 region
 mcli stat s3
 
