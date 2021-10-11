@@ -9,11 +9,9 @@ create 4 DNS records with type A
 10.3.3.245    minio4.company.ru
 
 CNAME ms3.company.ru - minio1.company.ru
-
 !!!рекомендовано создавать диски одного размера!!!
-```
+
 # ON ALL NODES
-```
 cat > /etc/hosts << EOF
 10.3.3.191    minio1.company.ru 
 10.3.3.195    minio2.company.ru
