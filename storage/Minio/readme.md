@@ -1,15 +1,19 @@
 # Minio
 ### PREREQ
 ```
+!!!рекомендовано создавать диски одного размера!!!
 1) DNS
+a)
 create 4 DNS records with type A
 10.3.3.191    minio1.company.ru 
 10.3.3.195    minio2.company.ru
 10.3.3.242    minio3.company.ru
 10.3.3.245    minio4.company.ru
-
-CNAME ms3.company.ru - minio1.company.ru
-!!!рекомендовано создавать диски одного размера!!!
+b) ingress
+10.3.3.191    minioing.company.ru
+10.3.3.195    minioing.company.ru
+c)
+CNAME ms3.company.ru - minioing.company.ru
 
 2) /etc/hosts
 # ON ALL NODES
