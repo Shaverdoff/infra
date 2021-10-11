@@ -7,6 +7,7 @@ CNAME ms3.company.ru - minio1.company.ru
 
 !!!рекомендовано создавать диски одного размера!!!
 # ON ALL NODES
+```
 cat > /etc/hosts << EOF
 10.3.3.1    minio1.company.ru 
 10.3.3.2    minio2.company.ru
@@ -14,7 +15,7 @@ cat > /etc/hosts << EOF
 10.3.3.4    minio4.company.ru
 127.0.0.1     localhost
 EOF
-
+```
 # Installation
 ```
 wget -O /usr/bin/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
