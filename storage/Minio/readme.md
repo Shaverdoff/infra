@@ -42,15 +42,16 @@ chown -R minio /data
 6) ENV file for minio
 cat > /etc/default/minio << EOF
 MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
-MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
+MINIO_VOLUMES="https://minio{1...4}.company.ru/data/data{1...1}"
 MINIO_ROOT_USER="miniorv"
 MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
+MINIO_SERVER_URL="https://ms3.company.ru"
 EOF
 where:
 # for 1 disk use
-### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...1}"
+### MINIO_VOLUMES="https://minio{1...4}.company.ru/data/data{1...1}"
 # for 2 disks use
-### MINIO_VOLUMES="https://minio{1...4}.rendez-vous.ru/data/data{1...2}"
+### MINIO_VOLUMES="https://minio{1...4}.company.ru/data/data{1...2}"
 PS: минимум 2 ноды и по 1 диску, всегда должно быть эквивалентно 4!!!, но не больше 16 нод
 #minio server http://host{1...n}/export{1...m}
 #host{1...n} - hostname - minio1:9000
@@ -69,13 +70,13 @@ upstream minio_servers {
 
 server {
     listen 80;
-    server_name ms3.rendez-vous.ru;
+    server_name ms3.company.ru;
     return 301 https://ms3.company.ru$request_uri;
 }
 
 server {
  listen 443 ssl;
- server_name ms3.rendez-vous.ru;
+ server_name ms3.company.ru;
  ssl_certificate     /etc/ssl/rv-ssl/public.crt;
  ssl_certificate_key /etc/ssl/rv-ssl/private.key;
  ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
@@ -155,7 +156,7 @@ systemctl restart minio.service
 systemctl status minio.service
 ```
 ### Minio WebUI
-http://10.3.3.191:9000
+https://ms3.company.ru:9001/dashboard
 
 ### ALIAS
 ```
