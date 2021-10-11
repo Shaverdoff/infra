@@ -87,7 +87,7 @@ SendSIGKILL=no
 [Install]
 WantedBy=multi-user.target
 EOF
-```
+
 
 systemctl daemon-reload
 systemctl enable minio
@@ -99,7 +99,6 @@ systemctl status minio.service
 ```
 ### Minio WebUI
 http://10.3.3.191:9000
-
 
 ### ALIAS
 ```
