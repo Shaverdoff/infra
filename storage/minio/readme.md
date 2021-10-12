@@ -66,16 +66,44 @@ PS: минимум 2 ноды и по 1 диску, всегда должно б
 yum install nginx -y
 nano /etc/nginx/conf.d/minio.conf
 upstream minio_servers {
-    server minio1.company.ru:9000;
-    server minio2.company.ru:9000;
-    server minio3.company.ru:9000;
-    server minio4.company.ru:9000;
+  server minio1.company.ru:9000;
+  server minio2.company.ru:9000;
+  server minio3.company.ru:9000;
+  server minio4.company.ru:9000;
 }
 
+#server {
+#    listen 80;
+#    server_name ms3.company.ru;
+#    return 301 https://ms3.company.ru$request_uri;
+#}
+
 server {
-    listen 80;
-    server_name ms3.company.ru;
-    return 301 https://ms3.company.ru$request_uri;
+ listen 80;
+ server_name ms3.company.ru;
+ # To allow special characters in headers
+ ignore_invalid_headers off;
+ # Allow any size file to be uploaded.
+ # Set to a value such as 1000m; to restrict file size to a specific value
+ client_max_body_size 0;
+ # To disable buffering
+ proxy_buffering off;
+
+ location / {
+   proxy_set_header X-Real-IP $remote_addr;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_set_header X-Forwarded-Proto $scheme;
+   proxy_set_header Host $http_host;
+
+   proxy_connect_timeout 300;
+   # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+   proxy_http_version 1.1;
+   proxy_set_header Connection "";
+   chunked_transfer_encoding off;
+   proxy_pass       http://minio_servers;
+   # Health Check endpoint might go here. See https://www.nginx.com/resources/wiki/modules/healthcheck/
+   # /minio/health/live;
+ }
 }
 
 server {
@@ -104,12 +132,11 @@ server {
    proxy_http_version 1.1;
    proxy_set_header Connection "";
    chunked_transfer_encoding off;
-   proxy_pass       https://minio_servers;
+   proxy_pass       http://minio_servers;
    # Health Check endpoint might go here. See https://www.nginx.com/resources/wiki/modules/healthcheck/
    # /minio/health/live;
  }
 }
-
 
 systemctl start nginx
 systemctl enable nginx
