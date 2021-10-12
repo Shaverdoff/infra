@@ -5,7 +5,7 @@ node-affinity:
 - запускает на нодах где есть метка - МЕТКА-ИМЯ
 - если не получается, на прошлое правило, можно запустить на других
 ```
-Examples
+Examples:
 ```
 # set pod to node with label size and key=large or key=small
   affinity:
