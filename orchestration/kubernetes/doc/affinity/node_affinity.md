@@ -4,7 +4,7 @@ NODE_AFFINITY = used to permorm the same task as nodeSelector!!!, but it has mor
 node-affinity:
 - запускает на нодах где есть метка - МЕТКА-ИМЯ
 - если не получается, на прошлое правило, можно запустить на других
-
+```
 
 | Type (HARD or SOFT ) | DuringScheduling |DuringExecution |
 | :------------- | :----------: | -----------: |
