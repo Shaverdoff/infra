@@ -5,12 +5,6 @@ node-affinity:
 - запускает на нодах где есть метка - МЕТКА-ИМЯ
 - если не получается, на прошлое правило, можно запустить на других
 ```
-
-| Type (HARD or SOFT ) | DuringScheduling |DuringExecution |
-| :------------- | :----------: | -----------: |
-| Type 1 | required  | Ignored |
-| Type 2 | Preferred | Ignored |
-
 Examples
 ```
 # set pod to node with label size and key=large or key=small
