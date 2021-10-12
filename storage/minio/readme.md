@@ -42,11 +42,14 @@ chown -R minio /data
 
 6) ENV file for minio
 cat > /etc/default/minio << EOF
-MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
-MINIO_VOLUMES="https://minio{1...4}.company.ru/data/data{1...1}"
+MINIO_OPTS="--console-address :9001"
+MINIO_VOLUMES="http://minio{1...4}.company.ru/data/data{1...1}"
 MINIO_ROOT_USER="miniorv"
 MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
 MINIO_SERVER_URL="https://ms3.company.ru"
+# for ssl
+#MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --console-address :9001"
+#MINIO_VOLUMES="https://minio{1...4}.company.ru/data/data{1...1}"
 EOF
 where:
 # for 1 disk use
