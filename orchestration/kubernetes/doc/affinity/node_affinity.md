@@ -1,5 +1,6 @@
 ## affinity
 ```
+# https://medium.com/the-programmer/working-with-node-affinity-in-kubernetes-40bc79d16f2f
 NODE_AFFINITY = used to permorm the same task as nodeSelector!!!, but it has more options
 node-affinity:
 - запускает на нодах где есть метка - МЕТКА-ИМЯ
