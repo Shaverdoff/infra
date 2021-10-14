@@ -1,6 +1,6 @@
 imagePullPolicy: IfNotPresent
 replicas: 1
-gitlabUrl: https://git.rendez-vous.ru/
+gitlabUrl: https://git.company.ru/
 runnerRegistrationToken: "SE83j9P_qP5HRyMeVafb"
 
 ## When stopping the runner, give it time to wait for its jobs to terminate.
