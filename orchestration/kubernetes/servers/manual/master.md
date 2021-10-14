@@ -44,4 +44,9 @@ helm install calico projectcalico/tigera-operator --version v3.20.2 -f values.ya
 watch kubectl get pods -n calico-system
 ### Wait until each pod has the STATUS of Running.
 
+### Install calicoctl as a binary on a single host
+!!! CHECK VERSION !!!
+curl -o calicoctl -O -L  "https://github.com/projectcalico/calicoctl/releases/download/v3.20.2/calicoctl" 
+chmod +x calicoctl
+mv calicoctl /usr/bin/
 ```
