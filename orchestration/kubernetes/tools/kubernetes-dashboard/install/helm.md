@@ -4,7 +4,7 @@
 helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 helm repo update
 helm delete kubernetes-dashboard -n kubernetes-dashboard
-export domain=k8s-test.rendez-vous.ru
+export domain=k8s-test.company.ru
 kubectl create ns kubernetes-dashboard
 helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard -n kubernetes-dashboard \
 --set extraArgs="{--enable-insecure-login=true}" \
