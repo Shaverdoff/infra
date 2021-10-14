@@ -1,6 +1,7 @@
 # Add gitlab-runner with helm
 ```
 # https://gitlab.com/gitlab-org/charts/gitlab-runner/blob/main/values.yaml
+helm repo add gitlab https://charts.gitlab.io
 
 # namespace
 kubectl create ns gitlab-runner
@@ -30,5 +31,5 @@ EOF
 
 kubectl create rolebinding --namespace=gitlab-runner gitlab-runner-binding --role=gitlab-runner --serviceaccount=gitlab-runner:default
 kubectl create clusterrolebinding default --clusterrole=cluster-admin --group=system:serviceaccounts --namespace=gitlab-runner
-helm upgrade --install --namespace gitlab-runner  gitlab-runner -f values.yaml gitlab/gitlab-runner
+helm upgrade --install --namespace gitlab-runner  gitlab-runner -f values.yml gitlab/gitlab-runner
 ```
