@@ -1,0 +1,40 @@
+imagePullPolicy: IfNotPresent
+replicas: 1
+gitlabUrl: https://git.rendez-vous.ru/
+runnerRegistrationToken: "SE83j9P_qP5HRyMeVafb"
+
+terminationGracePeriodSeconds: 3600
+concurrent: 10
+checkInterval: 30
+rbac:
+  create: false
+metrics:
+  enabled: true
+
+runners:
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        image = "alpine:3.13"
+    # nodeselector
+    [runners.kubernetes.node_selector]
+      gitlab-worker = "true"
+  # executor: kubernetes
+  image: alpine:3.13
+  locked: false
+  # tag for runner
+  tags: "kubernetes,k8s-ops"
+  # name for runner
+  name: "k8s-ops-helm"
+  # job without tags, can run too
+  runUntagged: true
+  # run only on protected branches
+  protected: false
+  privileged: true
+  # secret: gitlab-runner
+  # namespace:
+  cache: {}
+
+
+nodeSelector:
+  gitlab-worker: "true"
