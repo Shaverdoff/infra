@@ -14,10 +14,11 @@ kubectl create secret tls tls-secret --key rendez-vous.key --cert rendez-vous.cr
 # delete
 helm delete ingress-nginx -n ingress-nginx
 # install
+export replicaCount=1
 helm upgrade --install ingress-nginx -n ingress-nginx ingress-nginx/ingress-nginx  \
   --set controller.service.type=NodePort \
   --set controller.hostNetwork=true \
-  --set controller.replicaCount=2 \
+  --set controller.replicaCount=$replicaCount \
   --set controller.extraArgs.default-ssl-certificate=ingress-nginx/tls-secret \
   --set controller.nodeSelector."ingress"='' \
   --set controller.metrics.enabled=true \
