@@ -3,11 +3,23 @@ replicas: 1
 gitlabUrl: https://git.rendez-vous.ru/
 runnerRegistrationToken: "SE83j9P_qP5HRyMeVafb"
 
+## When stopping the runner, give it time to wait for its jobs to terminate.
 terminationGracePeriodSeconds: 3600
 concurrent: 10
+## Defines in seconds how often to check GitLab for a new builds
 checkInterval: 30
 rbac:
-  create: false
+  create: true
+  rules: 
+  - resources: ["pods", "secrets"]
+    verbs: ["get", "list", "watch", "create", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+
 metrics:
   enabled: true
 
@@ -15,17 +27,17 @@ runners:
   config: |
     [[runners]]
       [runners.kubernetes]
-        image = "alpine:3.13"
+        image = "alpine:3.14"
     # nodeselector
     [runners.kubernetes.node_selector]
       gitlab-worker = "true"
   # executor: kubernetes
-  image: alpine:3.13
+  image: alpine:3.14
   locked: false
   # tag for runner
-  tags: "kubernetes,k8s-ops"
+  tags: "k8s-test"
   # name for runner
-  name: "k8s-ops-helm"
+  name: "k8s-test-helm"
   # job without tags, can run too
   runUntagged: true
   # run only on protected branches
