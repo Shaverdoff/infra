@@ -17,4 +17,7 @@ sonobuoy results $results
 sonobuoy status
 # You can also inspect the logs of all Sonobuoy containers:
 sonobuoy logs
+
+### Deleting Sonobuoy entails removing its namespace as well as a few cluster scoped resources.
+sonobuoy delete --wait
 ```
