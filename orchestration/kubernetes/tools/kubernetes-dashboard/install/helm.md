@@ -7,7 +7,7 @@ helm delete kubernetes-dashboard -n kubernetes-dashboard
 export domain=k8s-test.company.ru
 kubectl create ns kubernetes-dashboard
 helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard -n kubernetes-dashboard \
---set extraArgs="{--enable-insecure-login=true}" \
+--set extraArgs="{--token-ttl=0}" \
 --set ingress.enabled=true \
 --set ingress.paths[0]=/ \
 --set ingress.hosts[0]=$domain \
