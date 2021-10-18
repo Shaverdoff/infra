@@ -1,7 +1,10 @@
 # NFS MOUNT
 ```
 # centos7
-sudo yum install nfs-utils nfs-utils-lib nfs4-acl-tools  
+sudo yum install nfs-utils nfs-utils-lib nfs4-acl-tools
+
+# check path, what available for mount
+showmount -e 10.1.0.90
 
 # STATIC SITE (new nfs storage) CLUSTER
 10.1.0.90:/Site_Static       /mnt/static_site/                     nfs       noatime         0 0
