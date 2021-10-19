@@ -1,10 +1,10 @@
-# DELETING OLD CLUSTER
+### DELETING OLD CLUSTER
 ```
 1 delete old ELB
 2 second delete vpc
 ```
 
-# Step-00 Update the repo
+### Step-00 Update the repo
 ```
 # here you can check last tag - https://github.com/terraform-aws-modules/terraform-aws-eks
 export tag="v17.1.0"
@@ -25,24 +25,24 @@ terraform workspace select default
 terraform apply -var-file=dev.tfvars
 ```
 
-# Step-01: install eksctl
+### Step-01: install eksctl
 ```
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 mv /tmp/eksctl /usr/bin
 eksctl version
 ```
-# Step-02: Create Cluster
+### Step-02: Create Cluster
 ```
 edit terraform.tfvars
 terraform init
 terraform apply
 ```
-#### Get List of clusters
+### Get List of clusters
 ```
 export region=us-east-2 cluster_name=api-dev
 eksctl --region us-east-2 get clusters 
 ```
-#### KubeConfig
+### KubeConfig
 ```
 export region=us-east-2
 export env=dev
@@ -52,7 +52,7 @@ cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/$env.yml
 export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/$env.yml
 kubectl get svc
 ```
-#### delete cluster
+### delete cluster
 ```
 terraform destroy
 ```
