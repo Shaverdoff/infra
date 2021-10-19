@@ -19,7 +19,7 @@ helm upgrade -i kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard -
 --set metricsScraper.enabled=true --set metrics-server.enabled=true \
 --set metrics-server.args="{--kubelet-preferred-address-types=InternalIP,--kubelet-insecure-tls}"
 ```
-#### Создаем ServiceAccount для кластера:
+### ServiceAccount:
 ```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -42,7 +42,6 @@ subjects:
   namespace: kube-system
 EOF
 ```
-#### Создаем ServiceAccount для входа в борду:
 ```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -66,7 +65,7 @@ subjects:
 EOF
 ```
 
-#### verify
+### verify
 ```
 kubectl -n kubernetes-dashboard get pods
 kubectl get deployment metrics-server -n kube-system
