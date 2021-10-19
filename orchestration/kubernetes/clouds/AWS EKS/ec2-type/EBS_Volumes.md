@@ -1,13 +1,13 @@
 
 # PERSISTENT VOLUMES
-## EBS
+### EBS
 ```
 # https://aws.amazon.com/premiumsupport/knowledge-center/eks-persistent-storage/
 export env=dev 
 export cluster_name=api-$env
 export KUBECONFIG=/opt/.kube/configs/$env.yml
 ```
-## 1. Create an IAM policy that allows the CSI driver's service account to make calls to AWS APIs:
+### 1. Create an IAM policy that allows the CSI driver's service account to make calls to AWS APIs:
 ```
 export EBS_CSI_POLICY_NAME="Amazon_EBS_CSI_Driver-$env" cluster_name="api-$env" region="us-east-2" iamserviceaccount="ebs-csi-controller-sa-$env"
 # Create an IAM policy called Amazon_EBS_CSI_Driver:
