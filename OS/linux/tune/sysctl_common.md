@@ -1,5 +1,9 @@
 # COMMON TUNING
 ```
+# check current config
+sysctl -a | grep tcp_low_latency
+
+nano /etc/sysctl.conf
 ##########
 # RV
 ###########
