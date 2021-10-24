@@ -46,7 +46,7 @@ default-authentication-plugin = mysql_native_password
  
 server-id = 1
 log-bin = mysql-bin
-binlog_do_db = sberdisk
+binlog_do_db = sperbux
  
 [mysqld_safe]
 log-error=/var/log/mariadb/mariadb.log
@@ -67,7 +67,7 @@ default-authentication-plugin = mysql_native_password
  
 server-id = 2
 log-bin = mysql-bin
-binlog_do_db = sberdisk
+binlog_do_db = sperbux
  
 [mysqld_safe]
 log-error=/var/log/mariadb/mariadb.log
@@ -92,11 +92,11 @@ systemctl start mariadb
 {{ replication_password }}
 {{ maxscale_password }}
 на  соответствующие значения
-CREATE DATABASE sberdisk;
+CREATE DATABASE sperbux;
 CREATE USER 'user'@'%' IDENTIFIED BY '{{ user_password }}';
 CREATE USER 'replicator'@'{{ slave_ip4_address }}' IDENTIFIED BY '{{ replication_password }}';
 CREATE USER 'maxscale'@'%' IDENTIFIED BY '{{ maxscale_password }}';
-GRANT ALL PRIVILEGES ON sberdisk.* TO 'user'@'%';
+GRANT ALL PRIVILEGES ON sperbux.* TO 'user'@'%';
 GRANT REPLICATION SLAVE ON *.* to 'replicator'@'{{ slave_ip4_address }}';
 GRANT SELECT ON mysql.user TO 'maxscale'@'%';
 GRANT SELECT ON mysql.roles_mapping TO 'maxscale'@'%';
@@ -106,9 +106,9 @@ GRANT BINLOG MONITOR on *.* to maxscale;
 GRANT SHOW DATABASES on *.* to maxscale;
 GRANT REPLICATION SLAVE ADMIN on *.* to maxscale;
 4.5	Настройка репликации
-mysql -e 'USE sberdisk;FLUSH TABLES WITH READ LOCK;'
+mysql -e 'USE sperbux;FLUSH TABLES WITH READ LOCK;'
 mysqldump  --all-databases > /tmp/migration_dump.sql
-mysql -e 'USE sberdisk;UNLOCK TABLES;'
+mysql -e 'USE sperbux;UNLOCK TABLES;'
 Code Block 17 Создание дампа на мастере
 Скопировать на слейв.
 mysql -e "STOP SLAVE;"
@@ -116,7 +116,7 @@ mysql < /tmp/migration_dump.sql
 Code Block 18 Восстановление на слейве
 На слейве создать пользователя. Указать пароль вместо {{ user_password }}
 CREATE USER 'user'@'%' IDENTIFIED BY '{{ user_password }}';
-GRANT ALL PRIVILEGES ON sberdisk.* TO 'user'@'%';
+GRANT ALL PRIVILEGES ON sperbux.* TO 'user'@'%';
 На мастере выполнить и сохранить полученные значения для подстановки в {{ current_log_master }} и {{ current_pos_master }} соответственно
 mysql -e 'SHOW MASTER STATUS;' | grep -v File | awk '{print $1}'
 mysql -e 'SHOW MASTER STATUS;' | grep -v File | awk '{print $2}'
