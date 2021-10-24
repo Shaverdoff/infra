@@ -126,7 +126,7 @@ defaults
     errorfile 408 /etc/haproxy/error_page.html
  
  
-frontend appdisk
+frontend appdevice
        bind {{ keepalived_floating_ip }}:80
        bind {{ keepalived_floating_ip }}:443 ssl crt {{ hap_ssl_cert_path }} ssl-min-ver TLSv1.2 
        redirect scheme https code 301 if !{ ssl_fc }
